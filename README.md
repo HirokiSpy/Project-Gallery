@@ -23,6 +23,46 @@ cd Project-Gallery
 
 Open individual project folders to view their source code and instructions.
 
+## Usage
+
+### Automatic Run — Cloudflare Tunnel
+
+Run locally and expose the web application through a Cloudflare domain.
+
+On Windows and Linux:
+
+```bash
+python run_galeri.py
+```
+
+On Windows only, you can double-click:
+
+```text
+start_galeri.bat
+```
+
+### Manual Run
+
+1. Open a terminal and navigate to the project folder:
+
+```bash
+cd path/to/project
+```
+
+2. Start the application:
+
+```bash
+python app.py
+```
+
+3. Open a new terminal and create a Cloudflare Tunnel:
+
+```bash
+cloudflared tunnel --url http://localhost:5000
+```
+
+Cloudflare Tunnel will provide a public URL that can be used to access the application.
+
 ## Purpose
 
 This repository is maintained for:
