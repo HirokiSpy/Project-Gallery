@@ -38,7 +38,7 @@ After the terminal asks for an admin password:
 
 1. Enter a new password that is at least 12 characters long.
 2. Enter the password again to confirm it.
-3. Open your browser and visit <http://127.0.0.1:5000>.
+3. Open your browser and visit <http://localhost:5000>.
 4. Press `Ctrl+C` in the terminal to stop the application.
 
 ### Linux — Run from the Terminal
@@ -56,7 +56,7 @@ After the terminal asks for an admin password:
 
 1. Enter a new password that is at least 12 characters long.
 2. Enter the password again to confirm it.
-3. Open your browser and visit <http://127.0.0.1:5000>.
+3. Open your browser and visit <http://localhost:5000>.
 4. Press `Ctrl+C` in the terminal to stop the application.
 
 If `pip` or Python packages are restricted by your environment, use a virtual environment:
