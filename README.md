@@ -8,7 +8,7 @@ Project-Gallery is a personal space for building and showcasing lightweight proj
 
 ## Projects
 
-This repository will continue to grow as new small projects are added.
+This repository will continue to grow as new small projects will be added.
 
 ## Technologies
 
@@ -16,9 +16,9 @@ The technologies used may vary between projects. Each project may include its ow
 
 ## Getting Started
 
-### Windows — jalankan terus daripada Terminal
+### Windows — Run from the Terminal
 
-Buka **PowerShell** atau **Command Prompt**, kemudian jalankan arahan ini satu demi satu:
+Open **PowerShell** or **Command Prompt**, then run these commands one by one:
 
 ```powershell
 git clone https://github.com/HirokiSpy/Project-Gallery.git
@@ -27,23 +27,23 @@ py -m pip install -r requirements.txt
 py run_local.py
 ```
 
-Jika arahan `py` tidak tersedia, gunakan `python`:
+If the `py` command is not available, use `python`:
 
 ```powershell
 python -m pip install -r requirements.txt
 python run_local.py
 ```
 
-Selepas terminal meminta kata laluan admin:
+After the terminal asks for an admin password:
 
-1. Masukkan kata laluan baharu sekurang-kurangnya 12 aksara.
-2. Masukkan semula kata laluan untuk pengesahan.
-3. Buka browser dan pergi ke <http://127.0.0.1:5000>.
-4. Tekan `Ctrl+C` dalam terminal untuk menghentikan aplikasi.
+1. Enter a new password that is at least 12 characters long.
+2. Enter the password again to confirm it.
+3. Open your browser and visit <http://127.0.0.1:5000>.
+4. Press `Ctrl+C` in the terminal to stop the application.
 
-### Linux — jalankan terus daripada Terminal
+### Linux — Run from the Terminal
 
-Buka terminal, kemudian jalankan:
+Open a terminal and run:
 
 ```bash
 git clone https://github.com/HirokiSpy/Project-Gallery.git
@@ -52,14 +52,14 @@ python3 -m pip install -r requirements.txt
 python3 run_local.py
 ```
 
-Selepas terminal meminta kata laluan admin:
+After the terminal asks for an admin password:
 
-1. Masukkan kata laluan baharu sekurang-kurangnya 12 aksara.
-2. Masukkan semula kata laluan untuk pengesahan.
-3. Buka browser dan pergi ke <http://127.0.0.1:5000>.
-4. Tekan `Ctrl+C` dalam terminal untuk menghentikan aplikasi.
+1. Enter a new password that is at least 12 characters long.
+2. Enter the password again to confirm it.
+3. Open your browser and visit <http://127.0.0.1:5000>.
+4. Press `Ctrl+C` in the terminal to stop the application.
 
-Jika `pip` atau modul Python dipasang dalam persekitaran yang dikawal, gunakan persekitaran maya:
+If `pip` or Python packages are restricted by your environment, use a virtual environment:
 
 ```bash
 python3 -m venv .venv
@@ -68,9 +68,9 @@ python -m pip install -r requirements.txt
 python run_local.py
 ```
 
-### Klon yang telah wujud
+### Existing Clone
 
-Jika folder projek sudah ada:
+If the project folder already exists:
 
 **Windows:**
 
@@ -88,10 +88,10 @@ python3 run_local.py
 
 ## Automatic Run — Cloudflare Tunnel
 
-Gunakan hanya jika ingin berkongsi aplikasi kepada orang lain melalui internet.
+Use this option when you want to share the application over the internet.
 
-1. Pasang `cloudflared` dan pastikan arahan `cloudflared` tersedia dalam terminal.
-2. Jalankan `run_galeri.py`:
+1. Install `cloudflared` and make sure the `cloudflared` command is available in the terminal.
+2. Run `run_galeri.py`:
 
 **Windows:**
 
@@ -105,25 +105,27 @@ py run_galeri.py
 python3 run_galeri.py
 ```
 
-Script akan meminta kata laluan admin, memulakan Flask, dan kemudian memaparkan URL Cloudflare Tunnel.
+The script will ask for an admin password, start Flask, and display the Cloudflare Tunnel URL.
 
 ## Manual Run
 
-Untuk menjalankan Flask tanpa tunnel:
+To run Flask without a tunnel:
 
-```bash
+**Windows:**
+
+```powershell
 python app.py
 ```
 
-Atau:
+**Linux:**
 
 ```bash
 python3 app.py
 ```
 
-Buka <http://127.0.0.1:5000>.
+Then open <http://127.0.0.1:5000>.
 
-Untuk membina Cloudflare Tunnel secara manual dalam terminal kedua:
+To start a Cloudflare Tunnel manually in a second terminal:
 
 ```bash
 cloudflared tunnel --url http://127.0.0.1:5000
@@ -131,12 +133,12 @@ cloudflared tunnel --url http://127.0.0.1:5000
 
 ## Security Notes
 
-- Kata laluan admin disimpan sebagai hash dalam `instance/admin_config.json`.
-- Folder `instance/` tidak dimasukkan ke dalam Git.
-- Jangan kongsi fail konfigurasi itu dengan sesiapa.
-- Gambar dan rekod galeri disimpan secara lokal dalam folder `uploads/` dan `data.json`.
-- Jangan commit gambar atau data lokal ke repo.
-- Flask debug dimatikan supaya maklumat dalaman tidak didedahkan.
+- The admin password is stored as a hash in `instance/admin_config.json`.
+- The `instance/` folder is not included in Git.
+- Do not share or commit the configuration file.
+- Gallery images and records are stored locally in `uploads/` and `data.json`.
+- Do not commit local images or runtime data to the repository.
+- Flask debug mode is disabled to prevent internal application details from being exposed.
 
 ## Purpose
 
