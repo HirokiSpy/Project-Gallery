@@ -36,7 +36,7 @@ python run_local.py
 
 After the terminal asks for an admin password:
 
-1. Enter a new password that is at least 12 characters long.
+1. Enter a new password that is at least 8 characters long.
 2. Enter the password again to confirm it.
 3. Open your browser and visit <http://localhost:5000>.
 4. Press `Ctrl+C` in the terminal to stop the application.
@@ -54,7 +54,7 @@ python3 run_local.py
 
 After the terminal asks for an admin password:
 
-1. Enter a new password that is at least 12 characters long.
+1. Enter a new password that is at least 8 characters long.
 2. Enter the password again to confirm it.
 3. Open your browser and visit <http://localhost:5000>.
 4. Press `Ctrl+C` in the terminal to stop the application.
