@@ -16,52 +16,127 @@ The technologies used may vary between projects. Each project may include its ow
 
 ## Getting Started
 
+### Windows — jalankan terus daripada Terminal
+
+Buka **PowerShell** atau **Command Prompt**, kemudian jalankan arahan ini satu demi satu:
+
+```powershell
+git clone https://github.com/HirokiSpy/Project-Gallery.git
+cd Project-Gallery
+py -m pip install -r requirements.txt
+py run_local.py
+```
+
+Jika arahan `py` tidak tersedia, gunakan `python`:
+
+```powershell
+python -m pip install -r requirements.txt
+python run_local.py
+```
+
+Selepas terminal meminta kata laluan admin:
+
+1. Masukkan kata laluan baharu sekurang-kurangnya 12 aksara.
+2. Masukkan semula kata laluan untuk pengesahan.
+3. Buka browser dan pergi ke <http://127.0.0.1:5000>.
+4. Tekan `Ctrl+C` dalam terminal untuk menghentikan aplikasi.
+
+### Linux — jalankan terus daripada Terminal
+
+Buka terminal, kemudian jalankan:
+
 ```bash
 git clone https://github.com/HirokiSpy/Project-Gallery.git
 cd Project-Gallery
+python3 -m pip install -r requirements.txt
+python3 run_local.py
 ```
 
-Open individual project folders to view their source code and instructions.
+Selepas terminal meminta kata laluan admin:
 
-## Usage
+1. Masukkan kata laluan baharu sekurang-kurangnya 12 aksara.
+2. Masukkan semula kata laluan untuk pengesahan.
+3. Buka browser dan pergi ke <http://127.0.0.1:5000>.
+4. Tekan `Ctrl+C` dalam terminal untuk menghentikan aplikasi.
 
-### Automatic Run — Cloudflare Tunnel
-
-Run locally and expose the web application through a Cloudflare domain.
-
-On Windows and Linux:
+Jika `pip` atau modul Python dipasang dalam persekitaran yang dikawal, gunakan persekitaran maya:
 
 ```bash
-python run_galeri.py
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python run_local.py
 ```
 
-On Windows only, you can double-click:
+### Klon yang telah wujud
 
-```text
-start_galeri.bat
+Jika folder projek sudah ada:
+
+**Windows:**
+
+```powershell
+cd Project-Gallery
+py run_local.py
 ```
 
-### Manual Run
-
-1. Open a terminal and navigate to the project folder:
+**Linux:**
 
 ```bash
-cd path/to/project
+cd Project-Gallery
+python3 run_local.py
 ```
 
-2. Start the application:
+## Automatic Run — Cloudflare Tunnel
+
+Gunakan hanya jika ingin berkongsi aplikasi kepada orang lain melalui internet.
+
+1. Pasang `cloudflared` dan pastikan arahan `cloudflared` tersedia dalam terminal.
+2. Jalankan `run_galeri.py`:
+
+**Windows:**
+
+```powershell
+py run_galeri.py
+```
+
+**Linux:**
+
+```bash
+python3 run_galeri.py
+```
+
+Script akan meminta kata laluan admin, memulakan Flask, dan kemudian memaparkan URL Cloudflare Tunnel.
+
+## Manual Run
+
+Untuk menjalankan Flask tanpa tunnel:
 
 ```bash
 python app.py
 ```
 
-3. Open a new terminal and create a Cloudflare Tunnel:
+Atau:
 
 ```bash
-cloudflared tunnel --url http://localhost:5000
+python3 app.py
 ```
 
-Cloudflare Tunnel will provide a public URL that can be used to access the application.
+Buka <http://127.0.0.1:5000>.
+
+Untuk membina Cloudflare Tunnel secara manual dalam terminal kedua:
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:5000
+```
+
+## Security Notes
+
+- Kata laluan admin disimpan sebagai hash dalam `instance/admin_config.json`.
+- Folder `instance/` tidak dimasukkan ke dalam Git.
+- Jangan kongsi fail konfigurasi itu dengan sesiapa.
+- Gambar dan rekod galeri disimpan secara lokal dalam folder `uploads/` dan `data.json`.
+- Jangan commit gambar atau data lokal ke repo.
+- Flask debug dimatikan supaya maklumat dalaman tidak didedahkan.
 
 ## Purpose
 
