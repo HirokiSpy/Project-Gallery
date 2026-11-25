@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri — Koleksi Komuniti</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0c0814;
+            --bg-elevated: rgba(24, 17, 38, 0.88);
+            --bg-card: #171124;
+            --bg-input: rgba(192, 132, 252, 0.06);
+            --border-subtle: rgba(192, 132, 252, 0.14);
+            --border-focus: #c084fc;
+            --text-primary: #faf5ff;
+            --text-secondary: #b4a5cc;
+            --accent: #a855f7;
+            --accent-hover: #9333ea;
+            --accent-glow: rgba(168, 85, 247, 0.38);
+            --danger: #f43f5e;
+            --danger-hover: #e11d48;
+            --warning-bg: rgba(245, 158, 11, 0.11);
+            --warning-border: rgba(245, 158, 11, 0.35);
+            --warning-text: #fde68a;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-base);
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(168, 85, 247, 0.2), transparent 44%),
+                radial-gradient(circle at 85% 12%, rgba(217, 70, 239, 0.13), transparent 46%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            display: block;
+            background: var(--bg-elevated);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 16px 20px 34px;
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 12px 32px rgba(5, 3, 10, 0.6);
+        }
+
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+        }
+
+        .baris-atas {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tajuk-wrap {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #c084fc;
+            box-shadow: 0 0 14px #a855f7;
+        }
+
+        h1 {
+            font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, #ffffff 0%, #e9d5ff 55%, #f0abfc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Lencana Admin Is Online Untuk Semua Orang */
+        .badge-admin-online {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: rgba(34, 197, 94, 0.16);
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            color: #86efac;
+        }
+
+        .badge-admin-online.tersembunyi {
+            display: none;
+        }
+
+        .badge-admin-online .dot-online {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        /* Navigation Bar 2 Tab */
+        .nav-bar-utama {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+            border-radius: var(--radius-md);
+            background: rgba(12, 8, 20, 0.72);
+            border: 1px solid var(--border-subtle);
+            align-self: center;
+        }
+
+        .nav-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: rgba(192, 132, 252, 0.08);
+        }
+
+        .nav-tab.aktif {
+            background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .amaran-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 18px;
+            max-width: 860px;
+            padding: 9px 14px;
+            border-radius: var(--radius-md);
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--warning-text);
+            font-size: 0.84rem;
+            font-weight: 600;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        .amaran-pin svg {
+            flex-shrink: 0;
+            color: #fbbf24;
+        }
+
+        .admin-panel-aksi {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fcd34d;
+        }
+
+        .btn-admin {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-admin:hover {
+            border-color: #c084fc;
+            background: rgba(192, 132, 252, 0.14);
+        }
+
+        .btn-keluar-admin {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            background: rgba(244, 63, 94, 0.14);
+            color: #fecdd3;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-keluar-admin:hover {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
+        .halaman-panel {
+            flex: 1 0 auto;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .halaman-panel.tersembunyi {
+            display: none;
+        }
+
+        .panel-upload-wrap {
+            max-width: 780px;
+            margin: 28px auto 48px;
+            padding: 24px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 14px 36px rgba(5, 3, 12, 0.55);
+        }
+
+        .tajuk-upload {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        form#borangMuatNaik {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .input-nama,
+        .input-pin {
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.92rem;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .input-nama {
+            flex: 1 1 180px;
+        }
+
+        .input-pin {
+            flex: 0 1 165px;
+        }
+
+        .input-nama::placeholder,
+        .input-pin::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .input-nama:focus,
+        .input-pin:focus {
+            outline: none;
+            background: rgba(192, 132, 252, 0.1);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22);
+        }
+
+        .warna-picker-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .warna-picker-wrap input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .warna-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .warna-picker-wrap input[type="color"]::-webkit-color-swatch {
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+        }
+
+        .warna-picker-wrap input[type="color"]::-moz-color-swatch {
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+        }
+
+        .pratinjau-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: #c084fc;
+        }
+
+        .pratinjau-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #c084fc;
+            box-shadow: 0 0 8px #c084fc;
+            display: inline-block;
+        }
+
+        .file-label {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px dashed rgba(192, 132, 252, 0.38);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            max-width: 230px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+
+        .file-label:hover {
+            border-color: #c084fc;
+            color: var(--text-primary);
+            background: rgba(168, 85, 247, 0.12);
+        }
+
+        .file-label input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .file-nama {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        button[type="submit"] {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            box-shadow: 0 6px 22px var(--accent-glow);
+            transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+            box-shadow: 0 10px 28px rgba(168, 85, 247, 0.52);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .galeri-luas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            align-items: start;
+            gap: 18px;
+            padding: 24px 20px 48px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .kad-gambar {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            width: 100%;
+            cursor: zoom-in;
+            box-shadow: 0 10px 25px rgba(5, 3, 12, 0.45);
+            transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.28s ease,
+                        box-shadow 0.28s ease;
+        }
+
+        .kad-gambar:hover {
+            transform: translateY(-4px);
+            border-color: rgba(192, 132, 252, 0.55);
+            box-shadow: 0 18px 38px rgba(5, 3, 12, 0.65), 0 0 0 1px rgba(192, 132, 252, 0.25);
+        }
+
+        .kad-gambar img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .kad-gambar:hover img {
+            transform: scale(1.02);
+        }
+
+        .btn-padam {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(18, 10, 28, 0.78);
+            backdrop-filter: blur(8px);
+            color: #fda4af;
+            cursor: pointer;
+            opacity: 0.92;
+            transition: background 0.2s, color 0.2s, transform 0.2s, border-color 0.2s, opacity 0.2s;
+        }
+
+        .btn-padam:hover {
+            background: var(--danger);
+            border-color: #fda4af;
+            color: #ffffff;
+            opacity: 1;
+            transform: scale(1.08);
+        }
+
+        .label-nama {
+            --tag-color: #c084fc;
+            position: absolute;
+            inset-inline: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to top,
+                rgba(12, 8, 20, 0.94) 0%,
+                rgba(12, 8, 20, 0.62) 60%,
+                transparent 100%
+            );
+            padding: 28px 16px 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--tag-color);
+            letter-spacing: 0.01em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+            pointer-events: none;
+        }
+
+        .label-nama .dot-nama {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--tag-color);
+            box-shadow: 0 0 10px var(--tag-color);
+            flex-shrink: 0;
+        }
+
+        .kosong {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 72px 24px;
+            background: rgba(168, 85, 247, 0.03);
+            border: 1px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-wrap {
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px 28px;
+        }
+
+        .garis-footer {
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+            margin-bottom: 18px;
+        }
+
+        footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        footer strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .modal-admin {
+            position: fixed;
+            inset: 0;
+            z-index: 250;
+            background: rgba(7, 4, 13, 0.86);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-admin.aktif {
+            display: flex;
+        }
+
+        .kotak-admin {
+            width: 100%;
+            max-width: 380px;
+            background: #171124;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+        }
+
+        .kotak-admin h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .kotak-admin p {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .kotak-admin input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.92rem;
+            margin-bottom: 14px;
+        }
+
+        .kotak-admin input[type="password"]:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .admin-modal-butang {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-batal {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-sah-admin {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(7, 4, 13, 0.92);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .lightbox.aktif {
+            display: flex;
+        }
+
+        .lightbox-kotak {
+            position: relative;
+            max-width: min(92vw, 960px);
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lightbox-kotak img {
+            max-width: 100%;
+            max-height: 78vh;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .lightbox-aksi {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .lightbox-kapsyen {
+            --tag-color: #c084fc;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--tag-color);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 18px;
+            border-radius: 999px;
+        }
+
+        .lightbox-kapsyen .dot-nama {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--tag-color);
+            box-shadow: 0 0 10px var(--tag-color);
+            flex-shrink: 0;
+        }
+
+        .lightbox-btn-padam {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(253, 164, 175, 0.35);
+            background: rgba(244, 63, 94, 0.18);
+            color: #fecdd3;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .lightbox-btn-padam:hover {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
+        .lightbox-btn-padam.tersembunyi {
+            display: none;
+        }
+
+        .lightbox-tutup {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .lightbox-tutup:hover {
+            background: rgba(192, 132, 252, 0.18);
+            transform: scale(1.06);
+        }
+
+        @media (max-width: 600px) {
+            header {
+                display: block;
+                padding: 14px 16px 48px;
+            }
+            .baris-atas {
+                align-items: flex-start;
+                margin-bottom: 0;
+                gap: 10px;
+            }
+            h1 {
+                font-size: 1.4rem;
+                line-height: 1.25;
+            }
+            .header-inner {
+                gap: 14px;
+            }
+            .btn-admin {
+                padding: 9px 13px;
+                font-size: 0.84rem;
+            }
+            .nav-bar-utama {
+                position: fixed;
+                bottom: 0;
+                inset-inline: 0;
+                z-index: 150;
+                width: 100%;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                background: rgba(16, 11, 26, 0.96);
+                backdrop-filter: blur(14px);
+                padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .nav-tab {
+                padding: 10px 12px;
+                font-size: 0.88rem;
+            }
+            .footer-wrap {
+                padding-bottom: 76px;
+            }
+            .amaran-pin {
+                font-size: 0.8rem;
+                text-align: left;
+                margin-bottom: 14px;
+            }
+            .panel-upload-wrap {
+                margin: 16px 12px 32px;
+                padding: 18px 14px;
+            }
+            .galeri-luas {
+                grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+                gap: 12px;
+                padding: 14px 12px 28px;
+            }
+            .input-pin {
+                flex: 1 1 140px;
+            }
+            .file-label {
+                max-width: 100%;
+                flex: 1 1 200px;
+            }
+            button[type="submit"] {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body data-is-admin="{{ '1' if is_admin else '0' }}">
+
+    <header>
+        <div class="header-inner">
+            <div class="baris-atas">
+                <div class="tajuk-wrap">
+                    <span class="badge-dot" aria-hidden="true"></span>
+                    <h1>GALERI GAMBAR</h1>
+                    <span
+                        class="badge-admin-online {{ '' if admin_online else 'tersembunyi' }}"
+                        id="badgeAdminOnline"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <span class="dot-online" aria-hidden="true"></span>
+                        Admin is online
+                    </span>
+                </div>
+
+                <div class="admin-panel-aksi">
+                    {% if is_admin %}
+                        <span class="admin-status">PROFILE ADMIN ACTIVE</span>
+                        <button type="button" class="btn-keluar-admin" id="btnKeluarAdmin">Logout</button>
+                    {% else %}
+                        <button type="button" class="btn-admin" id="btnBukaAdmin">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            Profile Anonymous
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <nav class="nav-bar-utama" aria-label="Navigasi utama">
+                <button type="button" class="nav-tab aktif" id="tabGambar" data-panel="gambar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    Gambar
+                </button>
+                <button type="button" class="nav-tab" id="tabUpload" data-panel="upload">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" x2="12" y1="3" y2="15"/>
+                    </svg>
+                    Upload
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Halaman 1: Gambar (Home) -->
+    <main class="halaman-panel" id="panelGambar">
+        <section class="galeri-luas" id="galeriGrid">
+            {% if senarai_data %}
+                {% for item in senarai_data %}
+                    {% set boleh_padam = true if (is_admin or item.ada_pin) else false %}
+                    <div
+                        class="kad-gambar"
+                        data-src="/uploads/{{ item.fail }}"
+                        data-fail="{{ item.fail }}"
+                        data-nama="{{ item.nama }}"
+                        data-warna="{{ item.warna or '#c084fc' }}"
+                        data-boleh-padam="{{ '1' if boleh_padam else '0' }}"
+                    >
+                        {% if boleh_padam %}
+                            <button type="button" class="btn-padam" title="Padam gambar" aria-label="Padam gambar {{ item.nama }}">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        {% endif %}
+                        <img src="/uploads/{{ item.fail }}" loading="lazy" alt="Gambar {{ item.nama }}">
+                        <div class="label-nama">
+                            <span class="dot-nama" aria-hidden="true"></span>
+                            <span class="teks-nama">{{ item.nama }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="kosong" id="mesejKosong">Belum ada gambar dimuat naik. Jadilah yang pertama!</div>
+            {% endif %}
+        </section>
+    </main>
+
+    <!-- Halaman 2: Upload -->
+    <section class="halaman-panel tersembunyi" id="panelUpload" aria-label="Muat naik gambar">
+        <div class="panel-upload-wrap">
+            <h2 class="tajuk-upload">Muat Naik Gambar Baru</h2>
+
+            <div class="amaran-pin" role="note">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <path d="M12 9v4"/>
+                    <path d="M12 17h.01"/>
+                </svg>
+                <span>Amaran: Jika muat naik tanpa PIN / password, gambar tidak boleh dipadam dan akan kekal selamanya.</span>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="borangMuatNaik">
+                <input
+                    class="input-nama"
+                    type="text"
+                    name="nama"
+                    id="inputNama"
+                    placeholder="Masukkan nama anda..."
+                    required
+                    maxlength="40"
+                >
+
+                <input
+                    class="input-pin"
+                    type="password"
+                    name="pin"
+                    id="inputPin"
+                    placeholder="PIN padam (pilihan)"
+                    maxlength="20"
+                    autocomplete="off"
+                >
+
+                <div class="warna-picker-wrap" title="Pilih warna dot dan nama">
+                    <span>Warna:</span>
+                    <input type="color" name="warna_nama" id="inputWarna" value="#c084fc" aria-label="Pilih warna dot dan nama">
+                    <span class="pratinjau-label" id="pratinjauWarna">
+                        <span class="pratinjau-dot" id="pratinjauDot"></span>
+                        <span id="teksPratinjau">Nama</span>
+                    </span>
+                </div>
+
+                <label class="file-label" title="Pilih fail gambar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    <span class="file-nama" id="teksFail">Pilih gambar...</span>
+                    <input type="file" name="gambar" id="inputGambar" accept="image/*" required>
+                </label>
+
+                <button type="submit">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" x2="12" y1="3" y2="15"/>
+                    </svg>
+                    Muat Naik
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <div class="footer-wrap">
+        <hr class="garis-footer">
+        <footer>
+            <span>&copy; 2026 <strong>Galeri Gambar</strong>. Di buat oleh Hiroki.</span>
+        </footer>
+    </div>
+
+    <!-- Modal Log Masuk Profil Admin -->
+    <div class="modal-admin" id="modalAdmin" role="dialog" aria-modal="true" aria-labelledby="tajukModalAdmin">
+        <div class="kotak-admin">
+            <h2 id="tajukModalAdmin">Log Masuk Profil Admin</h2>
+            <p>Admin boleh memadam mana-mana gambar yang dimuat naik tanpa memerlukan PIN.</p>
+            <input type="password" id="inputKatalaluanAdmin" placeholder="Masukkan kata laluan admin..." autocomplete="off">
+            <div class="admin-modal-butang">
+                <button type="button" class="btn-batal" id="btnBatalAdmin">Batal</button>
+                <button type="button" class="btn-sah-admin" id="btnSahAdmin">Masuk Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Pratonton gambar">
+        <button class="lightbox-tutup" id="tutupLightbox" type="button" aria-label="Tutup">&times;</button>
+        <div class="lightbox-kotak">
+            <img id="imgLightbox" src="" alt="">
+            <div class="lightbox-aksi">
+                <div class="lightbox-kapsyen" id="kapsyenLightbox">
+                    <span class="dot-nama" id="dotLightbox" aria-hidden="true"></span>
+                    <span id="teksLightbox"></span>
+                </div>
+                <button type="button" class="lightbox-btn-padam tersembunyi" id="padamLightbox">Padam Gambar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WARNA_KEY = 'galeri_warna_nama_v1';
+        const PIN_KEY = 'galeri_pin_owner_v1';
+        const TAB_KEY = 'galeri_tab_aktif_v1';
+        const IS_ADMIN = document.body.dataset.isAdmin === '1';
+
+        /* Semak status Admin Is Online untuk semua pelawat */
+        const badgeAdminOnline = document.getElementById('badgeAdminOnline');
+
+        async function semakStatusAdminGlobal() {
+            try {
+                const res = await fetch('/admin/status', { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (badgeAdminOnline) {
+                    badgeAdminOnline.classList.toggle('tersembunyi', !data.admin_online);
+                }
+            } catch {}
+        }
+
+        setInterval(semakStatusAdminGlobal, 5000);
+
+        /* Navigasi 2 Tab: Gambar (Home) & Upload */
+        const tabGambar = document.getElementById('tabGambar');
+        const tabUpload = document.getElementById('tabUpload');
+        const panelGambar = document.getElementById('panelGambar');
+        const panelUpload = document.getElementById('panelUpload');
+
+        function pilihTab(namaTab, simpan = true) {
+            const keUpload = namaTab === 'upload';
+            tabGambar.classList.toggle('aktif', !keUpload);
+            tabUpload.classList.toggle('aktif', keUpload);
+            panelGambar.classList.toggle('tersembunyi', keUpload);
+            panelUpload.classList.toggle('tersembunyi', !keUpload);
+            if (simpan) {
+                try {
+                    sessionStorage.setItem(TAB_KEY, keUpload ? 'upload' : 'gambar');
+                } catch {}
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        tabGambar.addEventListener('click', () => pilihTab('gambar'));
+        tabUpload.addEventListener('click', () => pilihTab('upload'));
+
+        try {
+            const tabTersimpan = sessionStorage.getItem(TAB_KEY);
+            if (tabTersimpan === 'upload') {
+                pilihTab('upload', false);
+            }
+        } catch {}
+
+        const inputNama = document.getElementById('inputNama');
+        const inputPin = document.getElementById('inputPin');
+        const inputWarna = document.getElementById('inputWarna');
+        const pratinjauWarna = document.getElementById('pratinjauWarna');
+        const pratinjauDot = document.getElementById('pratinjauDot');
+        const teksPratinjau = document.getElementById('teksPratinjau');
+        const inputGambar = document.getElementById('inputGambar');
+        const teksFail = document.getElementById('teksFail');
+        const borang = document.getElementById('borangMuatNaik');
+        const galeriGrid = document.getElementById('galeriGrid');
+
+        function bacaObjek(key) {
+            try {
+                return JSON.parse(localStorage.getItem(key) || '{}');
+            } catch {
+                return {};
+            }
+        }
+
+        function simpanObjek(key, obj) {
+            localStorage.setItem(key, JSON.stringify(obj));
+        }
+
+        function simpanWarna(kunci, warna) {
+            const data = bacaObjek(WARNA_KEY);
+            data[kunci] = warna;
+            simpanObjek(WARNA_KEY, data);
+        }
+
+        function simpanPin(kunci, pin) {
+            if (!pin) return;
+            const data = bacaObjek(PIN_KEY);
+            data[kunci] = pin;
+            simpanObjek(PIN_KEY, data);
+        }
+
+        function cariPinTersimpan(fail, nama) {
+            const data = bacaObjek(PIN_KEY);
+            return data[`fail:${fail}`] || data[`nama:${nama}`] || '';
+        }
+
+        function kemasKiniPratinjau() {
+            const warna = inputWarna.value;
+            const nama = inputNama.value.trim() || 'Nama';
+            pratinjauWarna.style.color = warna;
+            pratinjauDot.style.background = warna;
+            pratinjauDot.style.boxShadow = `0 0 8px ${warna}`;
+            teksPratinjau.textContent = nama;
+        }
+
+        inputWarna.addEventListener('input', kemasKiniPratinjau);
+        inputNama.addEventListener('input', kemasKiniPratinjau);
+        kemasKiniPratinjau();
+
+        borang.addEventListener('submit', () => {
+            const nama = inputNama.value.trim();
+            const pin = inputPin.value.trim();
+            const namaFail = inputGambar.files && inputGambar.files[0] ? inputGambar.files[0].name : '';
+            const warna = inputWarna.value;
+
+            if (namaFail) {
+                simpanWarna(`fail:${namaFail}`, warna);
+                simpanPin(`fail:${namaFail}`, pin);
+            }
+            if (nama) {
+                simpanWarna(`nama:${nama}`, warna);
+                simpanPin(`nama:${nama}`, pin);
+            }
+            try {
+                sessionStorage.setItem(TAB_KEY, 'gambar');
+            } catch {}
+        });
+
+        inputGambar.addEventListener('change', () => {
+            if (inputGambar.files && inputGambar.files.length > 0) {
+                teksFail.textContent = inputGambar.files[0].name;
+            } else {
+                teksFail.textContent = 'Pilih gambar...';
+            }
+        });
+
+        /* Log Masuk & Keluar Profil Admin */
+        const modalAdmin = document.getElementById('modalAdmin');
+        const btnBukaAdmin = document.getElementById('btnBukaAdmin');
+        const btnBatalAdmin = document.getElementById('btnBatalAdmin');
+        const btnSahAdmin = document.getElementById('btnSahAdmin');
+        const inputKatalaluanAdmin = document.getElementById('inputKatalaluanAdmin');
+        const btnKeluarAdmin = document.getElementById('btnKeluarAdmin');
+
+        function tutupModalAdmin() {
+            modalAdmin.classList.remove('aktif');
+            inputKatalaluanAdmin.value = '';
+        }
+
+        if (btnBukaAdmin) {
+            btnBukaAdmin.addEventListener('click', () => {
+                modalAdmin.classList.add('aktif');
+                inputKatalaluanAdmin.focus();
+            });
+        }
+
+        if (btnBatalAdmin) {
+            btnBatalAdmin.addEventListener('click', tutupModalAdmin);
+        }
+
+        if (modalAdmin) {
+            modalAdmin.addEventListener('click', (e) => {
+                if (e.target === modalAdmin) tutupModalAdmin();
+            });
+        }
+
+        async function hantarLogMasukAdmin() {
+            const password = inputKatalaluanAdmin.value.trim();
+            if (!password) {
+                window.alert('Masukkan kata laluan admin.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const hasil = await res.json().catch(() => ({}));
+                if (res.ok && hasil.ok) {
+                    window.location.reload();
+                } else {
+                    window.alert(hasil.error || 'Kata laluan admin salah.');
+                }
+            } catch {
+                window.alert('Gagal berhubung dengan pelayan.');
+            }
+        }
+
+        if (btnSahAdmin) {
+            btnSahAdmin.addEventListener('click', hantarLogMasukAdmin);
+        }
+
+        if (inputKatalaluanAdmin) {
+            inputKatalaluanAdmin.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') hantarLogMasukAdmin();
+            });
+        }
+
+        if (btnKeluarAdmin) {
+            btnKeluarAdmin.addEventListener('click', async () => {
+                await fetch('/admin/logout', { method: 'POST' }).catch(() => {});
+                window.location.reload();
+            });
+        }
+
+        /* Galeri & Lightbox */
+        const petaWarna = bacaObjek(WARNA_KEY);
+        const lightbox = document.getElementById('lightbox');
+        const imgLightbox = document.getElementById('imgLightbox');
+        const kapsyenLightbox = document.getElementById('kapsyenLightbox');
+        const teksLightbox = document.getElementById('teksLightbox');
+        const tutupLightbox = document.getElementById('tutupLightbox');
+        const padamLightbox = document.getElementById('padamLightbox');
+        let kadAktifLightbox = null;
+
+        function semakKosong() {
+            const baki = galeriGrid.querySelectorAll('.kad-gambar').length;
+            if (baki === 0 && !document.getElementById('mesejKosong')) {
+                const div = document.createElement('div');
+                div.className = 'kosong';
+                div.id = 'mesejKosong';
+                div.textContent = 'Belum ada gambar dimuat naik. Jadilah yang pertama!';
+                galeriGrid.appendChild(div);
+            }
+        }
+
+        async function prosesPadamKad(kad) {
+            if (!kad) return;
+            if (kad.dataset.bolehPadam !== '1') {
+                window.alert('Gambar ini dimuat naik tanpa PIN dan tidak boleh dipadam.');
+                return;
+            }
+
+            const nama = kad.dataset.nama || 'gambar ini';
+            const fail = kad.dataset.fail || '';
+            let pinUntukDihantar = '';
+
+            if (IS_ADMIN) {
+                const sahAdmin = window.confirm(`[ADMIN] Padam gambar milik "${nama}"?`);
+                if (!sahAdmin) return;
+            } else {
+                const pinCadangan = cariPinTersimpan(fail, nama);
+                const pinDimasukkan = window.prompt(
+                    `Masukkan PIN rahsia untuk memadam gambar milik "${nama}":`,
+                    pinCadangan
+                );
+                if (pinDimasukkan === null) return;
+                pinUntukDihantar = pinDimasukkan.trim();
+            }
+
+            try {
+                const res = await fetch('/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fail,
+                        nama,
+                        pin: pinUntukDihantar
+                    })
+                });
+
+                const hasil = await res.json().catch(() => ({}));
+
+                if (!res.ok || hasil.ok === false) {
+                    window.alert(hasil.error || 'PIN salah! Gambar tidak dipadam.');
+                    return;
+                }
+            } catch {
+                window.alert('Gagal berhubung dengan pelayan. Cuba lagi.');
+                return;
+            }
+
+            if (kadAktifLightbox === kad) {
+                tutupModal();
+            }
+            kad.remove();
+            semakKosong();
+        }
+
+        document.querySelectorAll('.kad-gambar').forEach((kad) => {
+            const nama = kad.dataset.nama || '';
+            const fail = kad.dataset.fail || '';
+            const bolehPadam = kad.dataset.bolehPadam === '1';
+            const warnaPelayan = (kad.dataset.warna || '').trim();
+            const warnaPilihan =
+                (warnaPelayan && warnaPelayan !== '#c084fc'
+                    ? warnaPelayan
+                    : petaWarna[`fail:${fail}`] || petaWarna[`nama:${nama}`] || warnaPelayan) ||
+                '#c084fc';
+
+            kad.dataset.warna = warnaPilihan;
+            const label = kad.querySelector('.label-nama');
+            if (label) {
+                label.style.setProperty('--tag-color', warnaPilihan);
+            }
+
+            const btnPadam = kad.querySelector('.btn-padam');
+            if (btnPadam && bolehPadam) {
+                btnPadam.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    prosesPadamKad(kad);
+                });
+            }
+
+            kad.addEventListener('click', () => {
+                kadAktifLightbox = kad;
+                imgLightbox.src = kad.dataset.src;
+                imgLightbox.alt = nama;
+                teksLightbox.textContent = nama;
+                kapsyenLightbox.style.setProperty('--tag-color', kad.dataset.warna);
+                padamLightbox.classList.toggle('tersembunyi', !bolehPadam);
+                lightbox.classList.add('aktif');
+            });
+        });
+
+        padamLightbox.addEventListener('click', () => {
+            prosesPadamKad(kadAktifLightbox);
+        });
+
+        function tutupModal() {
+            lightbox.classList.remove('aktif');
+            imgLightbox.src = '';
+            kadAktifLightbox = null;
+        }
+
+        tutupLightbox.addEventListener('click', tutupModal);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) tutupModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalAdmin && modalAdmin.classList.contains('aktif')) tutupModalAdmin();
+                if (lightbox.classList.contains('aktif')) tutupModal();
+            }
+        });
+    </script>
+
+</body>
+</html>
