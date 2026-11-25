@@ -128,7 +128,7 @@ Then open <http://127.0.0.1:5000>.
 To start a Cloudflare Tunnel manually in a second terminal:
 
 ```bash
-cloudflared tunnel --url http://127.0.0.1:5000
+cloudflared tunnel --url http://localhost:5000
 ```
 
 ## Security Notes
