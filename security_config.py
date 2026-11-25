@@ -20,9 +20,9 @@ def configure_admin_password():
         config = {}
 
     while True:
-        password = getpass.getpass("Set kata laluan admin (minimum 12 aksara): ")
-        if len(password) < 12:
-            print("Kata laluan mesti sekurang-kurangnya 12 aksara.")
+        password = getpass.getpass("Set kata laluan admin: ")
+        if len(password) < 8:
+            print("Kata laluan mesti sekurang-kurangnya 8 aksara.")
             continue
         confirmation = getpass.getpass("Masukkan semula kata laluan admin: ")
         if password != confirmation:
