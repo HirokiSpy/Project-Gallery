@@ -1,0 +1,12 @@
+# Runtime configuration, secrets, and local user data
+.env
+.env.*
+!.env.example
+instance/
+data.json
+uploads/*
+!uploads/.gitkeep
+__pycache__/
+*.py[cod]
+.venv/
+venv/
