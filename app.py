@@ -10,7 +10,15 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session
+from flask import (
+    Flask,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+)
 from rich.console import Console
 from rich.table import Table
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -21,11 +29,12 @@ from security_config import configure_admin_password, load_config
 
 BASE_DIR = Path(__file__).resolve().parent
 URL_FILE = BASE_DIR / "instance" / "tunnel_url.txt"
+ACCOUNT_FILE = BASE_DIR / "instance" / "accounts.json"
 
 if __name__ == "__main__" and os.environ.get("GALLERY_CONFIG_READY") != "1":
     configure_admin_password()
-CONFIG = load_config()
 
+CONFIG = load_config()
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 app = Flask(__name__)
@@ -42,8 +51,11 @@ admin_online = False
 FOLDER_GAMBAR = BASE_DIR / "uploads"
 FAIL_DATA = BASE_DIR / "data.json"
 EXTENSIONS_GAMBAR = {"png", "jpg", "jpeg", "gif", "webp"}
+
 KUNCI_DATA = threading.RLock()
+KUNCI_AKAUN = threading.RLock()
 FOLDER_GAMBAR.mkdir(exist_ok=True)
+
 with KUNCI_DATA:
     if not FAIL_DATA.exists():
         FAIL_DATA.write_text("[]", encoding="utf-8")
@@ -79,7 +91,8 @@ def bersihkan_pelawat_tidak_aktif():
     sekarang = time.time()
     with kunci_jadual:
         tamat = [
-            key for key, info in pelawat_aktif.items()
+            key
+            for key, info in pelawat_aktif.items()
             if sekarang - info.get("timestamp", sekarang) > TEMPOH_PELAWAT_TIDAK_AKTIF
         ]
         for key in tamat:
@@ -147,8 +160,11 @@ def bina_jadual():
         else:
             for idx, (vid, info) in enumerate(pelawat_aktif.items(), start=1):
                 jadual.add_row(
-                    str(idx), info["ipv4"], info["device"],
-                    info["aktiviti"], info["masa"],
+                    str(idx),
+                    info["ipv4"],
+                    info["device"],
+                    info["aktiviti"],
+                    info["masa"],
                 )
     return jadual
 
@@ -165,17 +181,23 @@ def kemaskini_pelawat(visitor_id, ipv4, device, aktiviti):
     with kunci_jadual:
         if visitor_id not in pelawat_aktif:
             pelawat_aktif[visitor_id] = {
-                "ipv4": ipv4 or "Detecting...", "device": device,
-                "aktiviti": aktiviti, "masa": masa_sekarang,
+                "ipv4": ipv4 or "Detecting...",
+                "device": device,
+                "aktiviti": aktiviti,
+                "masa": masa_sekarang,
                 "timestamp": timestamp,
             }
         else:
             if ipv4 and ipv4 not in {"Detecting...", "None", "IPv6/Tunnel"}:
                 pelawat_aktif[visitor_id]["ipv4"] = ipv4
-            pelawat_aktif[visitor_id].update({
-                "device": device, "aktiviti": aktiviti,
-                "masa": masa_sekarang, "timestamp": timestamp,
-            })
+            pelawat_aktif[visitor_id].update(
+                {
+                    "device": device,
+                    "aktiviti": aktiviti,
+                    "masa": masa_sekarang,
+                    "timestamp": timestamp,
+                }
+            )
 
 
 def _normalisasi_item(item):
@@ -209,6 +231,32 @@ def simpan_data(data):
         sementara.replace(FAIL_DATA)
 
 
+def baca_akaun():
+    with KUNCI_AKAUN:
+        if not ACCOUNT_FILE.exists():
+            return {}
+        with ACCOUNT_FILE.open("r", encoding="utf-8") as f:
+            akaun = json.load(f)
+        if not isinstance(akaun, dict):
+            raise ValueError("Format fail akaun tidak sah.")
+        return akaun
+
+
+def simpan_akaun(akaun):
+    with KUNCI_AKAUN:
+        ACCOUNT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        sementara = ACCOUNT_FILE.with_suffix(".tmp")
+        with sementara.open("w", encoding="utf-8") as f:
+            json.dump(akaun, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        sementara.replace(ACCOUNT_FILE)
+        try:
+            os.chmod(ACCOUNT_FILE, 0o600)
+        except OSError:
+            pass
+
+
 def sahkan_pin(pin_diberi, item):
     pin_hash = item.get("pin_hash", "")
     if pin_hash:
@@ -220,6 +268,32 @@ def sahkan_pin(pin_diberi, item):
     if pin_lama and hmac.compare_digest(pin_diberi, pin_lama):
         return True
     return False
+
+
+def sahkan_warna_hex(value, fallback="#c084fc"):
+    if isinstance(value, str):
+        warna = value.strip()
+        if WARNA_HEX.fullmatch(warna):
+            return warna
+    return fallback
+
+
+def dapatkan_warna_akaun():
+    warna_sesi = session.get("account_color")
+    if isinstance(warna_sesi, str) and WARNA_HEX.fullmatch(warna_sesi.strip()):
+        return warna_sesi.strip()
+    nama_kunci = session.get("account_username")
+    if nama_kunci:
+        try:
+            akaun = baca_akaun()
+            rekod = akaun.get(nama_kunci)
+            if isinstance(rekod, dict):
+                warna = sahkan_warna_hex(rekod.get("color"))
+                session["account_color"] = warna
+                return warna
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
+    return "#c084fc"
 
 
 def dapatkan_nama_device():
@@ -251,19 +325,125 @@ def dapatkan_ipv4_pelayan():
 
 
 def ada_akses_galeri() -> bool:
-    return bool(session.get("gallery_unlocked") or session.get("is_admin"))
+    return bool(
+        session.get("gallery_unlocked")
+        and (session.get("account_username") or session.get("is_admin"))
+    )
 
 
 @app.before_request
 def kawalan_pintu_masuk():
-    laluan_bebas = {"/", "/unlock", "/log-ip"}
+    laluan_bebas = {"/", "/unlock", "/log-ip", "/account/auth", "/admin/login"}
     if request.path in laluan_bebas:
         return None
     if not ada_akses_galeri():
         if request.path.startswith("/uploads/"):
             return "Akses disekat. Sila masukkan kata laluan galeri.", 403
-        return jsonify({"ok": False, "error": "Sesi terkunci. Sila masukkan kata laluan galeri dahulu."}), 403
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": "Sesi terkunci. Sila masukkan kata laluan galeri dahulu.",
+                }
+            ),
+            403,
+        )
     return None
+
+
+@app.route("/account/auth", methods=["POST"])
+def sahkan_akaun():
+    if not session.get("gallery_unlocked"):
+        return jsonify({"ok": False, "error": "Masukkan PIN galeri dahulu."}), 403
+    baki_sekat = disekat_sekarang("account")
+    if baki_sekat > 0:
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": f"Terlalu banyak cubaan salah. Cuba semula dalam {baki_sekat} saat.",
+                }
+            ),
+            429,
+        )
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
+    nama_akaun = data.get("username") or request.form.get("username") or ""
+    kata_laluan = data.get("password") or request.form.get("password") or ""
+    warna_akaun = sahkan_warna_hex(data.get("color") or request.form.get("color"))
+    if not isinstance(nama_akaun, str):
+        return jsonify({"ok": False, "error": "Username tidak sah."}), 400
+    nama_akaun = nama_akaun.strip()
+    if not re.fullmatch(r"[A-Za-z0-9_.-]{3,32}", nama_akaun):
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": "Username mesti 3-32 aksara: huruf, nombor, titik, garis bawah atau sempang.",
+                }
+            ),
+            400,
+        )
+    if not isinstance(kata_laluan, str) or len(kata_laluan) < 4 or len(kata_laluan) > 128:
+        return jsonify({"ok": False, "error": "Password mesti 4-128 aksara."}), 400
+    nama_kunci = nama_akaun.casefold()
+    try:
+        with KUNCI_AKAUN:
+            akaun = baca_akaun()
+            if nama_kunci in akaun:
+                rekod_akaun = akaun[nama_kunci]
+                if not isinstance(rekod_akaun, dict):
+                    logging.error("Rekod akaun tidak sah untuk %s", nama_kunci)
+                    return jsonify({"ok": False, "error": "Rekod akaun rosak."}), 500
+                try:
+                    password_betul = check_password_hash(
+                        rekod_akaun.get("password_hash", ""), kata_laluan
+                    )
+                except (AttributeError, TypeError, ValueError):
+                    logging.exception("Hash password akaun rosak untuk %s", nama_kunci)
+                    return jsonify({"ok": False, "error": "Rekod akaun rosak."}), 500
+                if not password_betul:
+                    rekod_cubaan_gagal("account")
+                    return (
+                        jsonify(
+                            {"ok": False, "error": "Password salah untuk username ini."}
+                        ),
+                        401,
+                    )
+                warna_simpan = rekod_akaun.get("color")
+                if isinstance(warna_simpan, str) and WARNA_HEX.fullmatch(warna_simpan.strip()):
+                    warna_akaun = warna_simpan.strip()
+                else:
+                    rekod_akaun["color"] = warna_akaun
+                    simpan_akaun(akaun)
+            else:
+                akaun[nama_kunci] = {
+                    "username": nama_akaun,
+                    "password_hash": generate_password_hash(kata_laluan),
+                    "color": warna_akaun,
+                }
+                simpan_akaun(akaun)
+                rekod_akaun = akaun[nama_kunci]
+            nama_paparan_akaun = rekod_akaun.get("username", nama_akaun)
+            if not isinstance(nama_paparan_akaun, str):
+                logging.error("Username paparan akaun tidak sah untuk %s", nama_kunci)
+                return jsonify({"ok": False, "error": "Rekod akaun rosak."}), 500
+    except (OSError, json.JSONDecodeError, ValueError):
+        logging.exception("Gagal membaca atau menyimpan fail akaun")
+        return jsonify({"ok": False, "error": "Gagal mengakses simpanan akaun."}), 500
+
+    session["account_username"] = nama_kunci
+    session["account_display_name"] = nama_paparan_akaun
+    session["account_color"] = warna_akaun
+    reset_cubaan("account")
+    kemaskini_pelawat(
+        dapatkan_id_pelawat(),
+        session.get("client_ipv4") or dapatkan_ipv4_pelayan() or "Detecting...",
+        dapatkan_nama_device(),
+        f"Account Login ({nama_kunci})",
+    )
+    return jsonify({"ok": True, "username": nama_paparan_akaun, "color": warna_akaun})
 
 
 @app.route("/unlock", methods=["POST"])
@@ -273,7 +453,15 @@ def buka_kunci_galeri():
     device = dapatkan_nama_device()
     baki_sekat = disekat_sekarang("unlock")
     if baki_sekat > 0:
-        return jsonify({"ok": False, "error": f"Terlalu banyak cubaan salah. Cuba semula dalam {baki_sekat} saat."}), 429
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": f"Terlalu banyak cubaan salah. Cuba semula dalam {baki_sekat} saat.",
+                }
+            ),
+            429,
+        )
     data = request.get_json(silent=True) or {}
     passcode = (data.get("passcode") or request.form.get("passcode") or "").strip()
     if check_password_hash(CONFIG["gallery_passcode_hash"], passcode):
@@ -306,7 +494,12 @@ def log_ipv4():
     vid = dapatkan_id_pelawat()
     data = request.get_json(silent=True) or {}
     ip_dari_browser = sahkan_ipv4(data.get("ipv4", ""))
-    ipv4_baru = dapatkan_ipv4_pelayan() or ip_dari_browser or sahkan_ipv4(session.get("client_ipv4", "")) or "Detecting..."
+    ipv4_baru = (
+        dapatkan_ipv4_pelayan()
+        or ip_dari_browser
+        or sahkan_ipv4(session.get("client_ipv4", ""))
+        or "Detecting..."
+    )
     if sahkan_ipv4(ipv4_baru):
         session["client_ipv4"] = ipv4_baru
     device = dapatkan_nama_device()
@@ -320,25 +513,41 @@ def utama():
     vid = dapatkan_id_pelawat()
     ipv4 = session.get("client_ipv4") or dapatkan_ipv4_pelayan() or "Detecting..."
     device = dapatkan_nama_device()
-    if not ada_akses_galeri():
+
+    if not session.get("gallery_unlocked"):
         kemaskini_pelawat(vid, ipv4, device, "Lock Screen")
         return render_template(
             "index.html",
             unlocked=False,
+            authenticated=False,
             senarai_data=[],
             liked_files=[],
             is_admin=False,
             admin_online=False,
+            account_username="",
+        )
+
+    if not ada_akses_galeri():
+        kemaskini_pelawat(vid, ipv4, device, "Account Login")
+        return render_template(
+            "index.html",
+            unlocked=True,
+            authenticated=False,
+            senarai_data=[],
+            liked_files=[],
+            is_admin=False,
+            admin_online=False,
+            account_username="",
         )
 
     if request.method == "POST":
-        nama_pengirim = (request.form.get("nama") or "Tanpa Nama").strip()[:40]
-        pin_padam = (request.form.get("pin") or "").strip()
-        warna_nama = (request.form.get("warna_nama") or "#c084fc").strip()
-        if not WARNA_HEX.fullmatch(warna_nama):
-            warna_nama = "#c084fc"
+        description = (request.form.get("description") or "").strip()[:300]
+        show_username = request.form.get("show_username") == "1"
+        warna_nama = dapatkan_warna_akaun()
         fail = request.files.get("gambar")
         if fail and fail.filename:
+            if not description:
+                return "Description gambar diperlukan.", 400
             nama_asal = secure_filename(fail.filename)
             sambungan = Path(nama_asal).suffix.lstrip(".").lower()
             if not sambungan or sambungan not in EXTENSIONS_GAMBAR:
@@ -348,23 +557,33 @@ def utama():
             nama_selamat = f"{uuid.uuid4().hex}.{sambungan}"
             laluan_baru = FOLDER_GAMBAR / nama_selamat
             fail.save(laluan_baru)
+            nama_akaun = (
+                session.get("account_display_name")
+                or session.get("account_username")
+                or "Admin"
+            )
             with KUNCI_DATA:
                 rekod = baca_data()
-                rekod.insert(0, {
-                    "nama": nama_pengirim,
-                    "fail": nama_selamat,
-                    "ada_pin": bool(pin_padam),
-                    "pin_hash": generate_password_hash(pin_padam) if pin_padam else "",
-                    "warna": warna_nama,
-                    "likes": 0,
-                    "comments": [],
-                })
+                rekod.insert(
+                    0,
+                    {
+                        "nama": nama_akaun,
+                        "fail": nama_selamat,
+                        "owner": session.get("account_username"),
+                        "username": nama_akaun,
+                        "description": description,
+                        "show_username": show_username,
+                        "warna": warna_nama,
+                        "likes": 0,
+                        "comments": [],
+                    },
+                )
                 try:
                     simpan_data(rekod)
                 except OSError:
                     laluan_baru.unlink(missing_ok=True)
                     return "Gagal menyimpan rekod gambar.", 500
-            kemaskini_pelawat(vid, ipv4, device, f"Uploaded Image ('{nama_pengirim}')")
+            kemaskini_pelawat(vid, ipv4, device, f"Uploaded Image ('{description}')")
         return redirect("/")
 
     kemaskini_pelawat(vid, ipv4, device, "Home Page")
@@ -375,10 +594,16 @@ def utama():
     return render_template(
         "index.html",
         unlocked=True,
+        authenticated=True,
         senarai_data=senarai_data,
         liked_files=liked_files,
         is_admin=bool(session.get("is_admin")),
         admin_online=admin_online,
+        account_username=session.get("account_username", ""),
+        account_display_name=session.get(
+            "account_display_name", session.get("account_username", "")
+        ),
+        account_color=dapatkan_warna_akaun(),
     )
 
 
@@ -390,19 +615,16 @@ def like_gambar(nama_fail):
     fail_bersih = os.path.basename(nama_fail)
     if not fail_bersih:
         return jsonify({"ok": False, "error": "Nama fail tidak sah."}), 400
-
     with KUNCI_DATA:
         rekod = baca_data()
         sasaran = next((item for item in rekod if item.get("fail") == fail_bersih), None)
         if not sasaran:
             return jsonify({"ok": False, "error": "Rekod gambar tidak dijumpai."}), 404
-
         _normalisasi_item(sasaran)
         liked_list = session.get("liked_files", [])
         if not isinstance(liked_list, list):
             liked_list = []
         liked_set = set(liked_list)
-
         kiraan = max(0, sasaran["likes"])
         if fail_bersih in liked_set:
             liked_set.remove(fail_bersih)
@@ -412,15 +634,15 @@ def like_gambar(nama_fail):
             liked_set.add(fail_bersih)
             kiraan += 1
             liked_now = True
-
         sasaran["likes"] = kiraan
         session["liked_files"] = list(liked_set)
         try:
             simpan_data(rekod)
         except OSError:
             return jsonify({"ok": False, "error": "Gagal menyimpan kiraan like."}), 500
-
-    kemaskini_pelawat(vid, ipv4, device, f"{'Liked' if liked_now else 'Unliked'} ('{sasaran.get('nama', '')}')")
+    kemaskini_pelawat(
+        vid, ipv4, device, f"{'Liked' if liked_now else 'Unliked'} ('{sasaran.get('nama', '')}')"
+    )
     return jsonify({"ok": True, "likes": kiraan, "liked": liked_now})
 
 
@@ -432,20 +654,20 @@ def komen_gambar(nama_fail):
     fail_bersih = os.path.basename(nama_fail)
     if not fail_bersih:
         return jsonify({"ok": False, "error": "Nama fail tidak sah."}), 400
-
     payload = request.get_json(silent=True) or {}
-    pengirim = (payload.get("author") or request.form.get("author") or "Anonymous").strip()[:40] or "Anonymous"
+    pengirim = (
+        session.get("account_display_name")
+        or session.get("account_username")
+        or ("Admin" if session.get("is_admin") else "Anonymous")
+    )
     teks = (payload.get("text") or request.form.get("text") or "").strip()[:300]
-
     if not teks:
         return jsonify({"ok": False, "error": "Komen tidak boleh kosong."}), 400
-
     with KUNCI_DATA:
         rekod = baca_data()
         sasaran = next((item for item in rekod if item.get("fail") == fail_bersih), None)
         if not sasaran:
             return jsonify({"ok": False, "error": "Rekod gambar tidak dijumpai."}), 404
-
         _normalisasi_item(sasaran)
         komen_baru = {
             "id": uuid.uuid4().hex[:8],
@@ -455,12 +677,10 @@ def komen_gambar(nama_fail):
         }
         sasaran["comments"].append(komen_baru)
         senarai_komen = sasaran["comments"]
-
         try:
             simpan_data(rekod)
         except OSError:
             return jsonify({"ok": False, "error": "Gagal menyimpan komen."}), 500
-
     kemaskini_pelawat(vid, ipv4, device, f"Commented on ('{sasaran.get('nama', '')}')")
     return jsonify({"ok": True, "comment": komen_baru, "comments": senarai_komen})
 
@@ -468,12 +688,22 @@ def komen_gambar(nama_fail):
 @app.route("/admin/login", methods=["POST"])
 def admin_login():
     global admin_online
+    if not session.get("gallery_unlocked"):
+        return jsonify({"ok": False, "error": "Masukkan PIN galeri dahulu."}), 403
     vid = dapatkan_id_pelawat()
     ipv4 = session.get("client_ipv4") or dapatkan_ipv4_pelayan() or "Detecting..."
     device = dapatkan_nama_device()
     baki_sekat = disekat_sekarang("admin")
     if baki_sekat > 0:
-        return jsonify({"ok": False, "error": f"Terlalu banyak cubaan admin gagal. Cuba lagi dalam {baki_sekat} saat."}), 429
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": f"Terlalu banyak cubaan admin gagal. Cuba lagi dalam {baki_sekat} saat.",
+                }
+            ),
+            429,
+        )
     data = request.get_json(silent=True) or {}
     katalaluan = (data.get("password") or request.form.get("password") or "").strip()
     if check_password_hash(CONFIG["admin_password_hash"], katalaluan):
@@ -525,27 +755,53 @@ def padam_gambar():
     nama_fail = os.path.basename(data.get("fail", ""))
     pin_diberi = (data.get("pin") or "").strip()
     is_admin = bool(session.get("is_admin"))
+    akaun_semasa = session.get("account_username")
     if not nama_fail:
         return jsonify({"ok": False, "error": "Nama fail tiada."}), 400
-
     with KUNCI_DATA:
         rekod = baca_data()
         item_padam = next((item for item in rekod if item.get("fail") == nama_fail), None)
         if not item_padam:
             return jsonify({"ok": False, "error": "Rekod gambar tidak dijumpai."}), 404
         if not is_admin:
-            if not (item_padam.get("pin_hash") or item_padam.get("pin")):
-                return jsonify({"ok": False, "error": "Gambar ini tiada PIN dan tidak boleh dipadam."}), 403
-            if not sahkan_pin(pin_diberi, item_padam):
-                kemaskini_pelawat(vid, ipv4, device, f"Delete Failed ('{item_padam.get('nama', '')}')")
-                return jsonify({"ok": False, "error": "PIN salah! Gambar tidak dipadam."}), 403
-
+            pemilik = item_padam.get("owner")
+            if pemilik:
+                if pemilik != akaun_semasa:
+                    kemaskini_pelawat(
+                        vid, ipv4, device, f"Delete Failed ('{item_padam.get('nama', '')}')"
+                    )
+                    return (
+                        jsonify(
+                            {
+                                "ok": False,
+                                "error": "Hanya pemilik akaun gambar ini boleh memadamnya.",
+                            }
+                        ),
+                        403,
+                    )
+            elif not (item_padam.get("pin_hash") or item_padam.get("pin")):
+                return (
+                    jsonify(
+                        {
+                            "ok": False,
+                            "error": "Gambar ini tiada PIN pemilik dan tidak boleh dipadam.",
+                        }
+                    ),
+                    403,
+                )
+            elif not sahkan_pin(pin_diberi, item_padam):
+                kemaskini_pelawat(
+                    vid, ipv4, device, f"Delete Failed ('{item_padam.get('nama', '')}')"
+                )
+                return (
+                    jsonify({"ok": False, "error": "PIN salah! Gambar tidak dipadam."}),
+                    403,
+                )
         laluan_fail = FOLDER_GAMBAR / nama_fail
         if laluan_fail.exists():
             laluan_fail.unlink()
         rekod_baru = [item for item in rekod if item.get("fail") != nama_fail]
         simpan_data(rekod_baru)
-
     kemaskini_pelawat(vid, ipv4, device, f"Deleted Image ('{item_padam.get('nama', '')}')")
     return jsonify({"ok": True})
 
