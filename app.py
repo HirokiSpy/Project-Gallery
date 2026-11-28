@@ -7,7 +7,7 @@ import re
 import threading
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session
@@ -178,12 +178,23 @@ def kemaskini_pelawat(visitor_id, ipv4, device, aktiviti):
             })
 
 
+def _normalisasi_item(item):
+    if not isinstance(item.get("likes"), int):
+        item["likes"] = int(item.get("likes") or 0)
+    if not isinstance(item.get("comments"), list):
+        item["comments"] = []
+
+
 def baca_data():
     with KUNCI_DATA:
         try:
             with FAIL_DATA.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-            return data if isinstance(data, list) else []
+            if isinstance(data, list):
+                for item in data:
+                    _normalisasi_item(item)
+                return data
+            return []
         except (OSError, json.JSONDecodeError):
             return []
 
@@ -311,7 +322,14 @@ def utama():
     device = dapatkan_nama_device()
     if not ada_akses_galeri():
         kemaskini_pelawat(vid, ipv4, device, "Lock Screen")
-        return render_template("index.html", unlocked=False, senarai_data=[], is_admin=False, admin_online=False)
+        return render_template(
+            "index.html",
+            unlocked=False,
+            senarai_data=[],
+            liked_files=[],
+            is_admin=False,
+            admin_online=False,
+        )
 
     if request.method == "POST":
         nama_pengirim = (request.form.get("nama") or "Tanpa Nama").strip()[:40]
@@ -333,10 +351,13 @@ def utama():
             with KUNCI_DATA:
                 rekod = baca_data()
                 rekod.insert(0, {
-                    "nama": nama_pengirim, "fail": nama_selamat,
+                    "nama": nama_pengirim,
+                    "fail": nama_selamat,
                     "ada_pin": bool(pin_padam),
                     "pin_hash": generate_password_hash(pin_padam) if pin_padam else "",
                     "warna": warna_nama,
+                    "likes": 0,
+                    "comments": [],
                 })
                 try:
                     simpan_data(rekod)
@@ -348,8 +369,100 @@ def utama():
 
     kemaskini_pelawat(vid, ipv4, device, "Home Page")
     senarai_data = baca_data()
-    return render_template("index.html", unlocked=True, senarai_data=senarai_data,
-                           is_admin=bool(session.get("is_admin")), admin_online=admin_online)
+    liked_files = session.get("liked_files", [])
+    if not isinstance(liked_files, list):
+        liked_files = []
+    return render_template(
+        "index.html",
+        unlocked=True,
+        senarai_data=senarai_data,
+        liked_files=liked_files,
+        is_admin=bool(session.get("is_admin")),
+        admin_online=admin_online,
+    )
+
+
+@app.route("/like/<nama_fail>", methods=["POST"])
+def like_gambar(nama_fail):
+    vid = dapatkan_id_pelawat()
+    ipv4 = session.get("client_ipv4") or dapatkan_ipv4_pelayan() or "Detecting..."
+    device = dapatkan_nama_device()
+    fail_bersih = os.path.basename(nama_fail)
+    if not fail_bersih:
+        return jsonify({"ok": False, "error": "Nama fail tidak sah."}), 400
+
+    with KUNCI_DATA:
+        rekod = baca_data()
+        sasaran = next((item for item in rekod if item.get("fail") == fail_bersih), None)
+        if not sasaran:
+            return jsonify({"ok": False, "error": "Rekod gambar tidak dijumpai."}), 404
+
+        _normalisasi_item(sasaran)
+        liked_list = session.get("liked_files", [])
+        if not isinstance(liked_list, list):
+            liked_list = []
+        liked_set = set(liked_list)
+
+        kiraan = max(0, sasaran["likes"])
+        if fail_bersih in liked_set:
+            liked_set.remove(fail_bersih)
+            kiraan = max(0, kiraan - 1)
+            liked_now = False
+        else:
+            liked_set.add(fail_bersih)
+            kiraan += 1
+            liked_now = True
+
+        sasaran["likes"] = kiraan
+        session["liked_files"] = list(liked_set)
+        try:
+            simpan_data(rekod)
+        except OSError:
+            return jsonify({"ok": False, "error": "Gagal menyimpan kiraan like."}), 500
+
+    kemaskini_pelawat(vid, ipv4, device, f"{'Liked' if liked_now else 'Unliked'} ('{sasaran.get('nama', '')}')")
+    return jsonify({"ok": True, "likes": kiraan, "liked": liked_now})
+
+
+@app.route("/comment/<nama_fail>", methods=["POST"])
+def komen_gambar(nama_fail):
+    vid = dapatkan_id_pelawat()
+    ipv4 = session.get("client_ipv4") or dapatkan_ipv4_pelayan() or "Detecting..."
+    device = dapatkan_nama_device()
+    fail_bersih = os.path.basename(nama_fail)
+    if not fail_bersih:
+        return jsonify({"ok": False, "error": "Nama fail tidak sah."}), 400
+
+    payload = request.get_json(silent=True) or {}
+    pengirim = (payload.get("author") or request.form.get("author") or "Anonymous").strip()[:40] or "Anonymous"
+    teks = (payload.get("text") or request.form.get("text") or "").strip()[:300]
+
+    if not teks:
+        return jsonify({"ok": False, "error": "Komen tidak boleh kosong."}), 400
+
+    with KUNCI_DATA:
+        rekod = baca_data()
+        sasaran = next((item for item in rekod if item.get("fail") == fail_bersih), None)
+        if not sasaran:
+            return jsonify({"ok": False, "error": "Rekod gambar tidak dijumpai."}), 404
+
+        _normalisasi_item(sasaran)
+        komen_baru = {
+            "id": uuid.uuid4().hex[:8],
+            "author": pengirim,
+            "text": teks,
+            "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        }
+        sasaran["comments"].append(komen_baru)
+        senarai_komen = sasaran["comments"]
+
+        try:
+            simpan_data(rekod)
+        except OSError:
+            return jsonify({"ok": False, "error": "Gagal menyimpan komen."}), 500
+
+    kemaskini_pelawat(vid, ipv4, device, f"Commented on ('{sasaran.get('nama', '')}')")
+    return jsonify({"ok": True, "comment": komen_baru, "comments": senarai_komen})
 
 
 @app.route("/admin/login", methods=["POST"])
