@@ -1,0 +1,177 @@
+import os
+import re
+import shutil
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+
+from rich.live import Live
+from security_config import configure_admin_password
+
+BASE_DIR = Path(__file__).resolve().parent
+PORT = int(os.environ.get("PORT", 5000))
+TARGET_URL = f"http://127.0.0.1:{PORT}"
+URL_FILE = BASE_DIR / "instance" / "tunnel_url.txt"
+ENV_FILE = BASE_DIR / ".env"
+
+
+def load_local_env():
+    """Load environment variables from .env file if present."""
+    if not ENV_FILE.exists():
+        return
+    try:
+        for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+    except OSError:
+        pass
+
+
+def find_cloudflared() -> str | None:
+    in_path = shutil.which("cloudflared")
+    if in_path:
+        return in_path
+    for path in (
+        r"C:\Program Files (x86)\cloudflared\cloudflared.exe",
+        r"C:\Program Files\cloudflared\cloudflared.exe",
+    ):
+        if os.path.exists(path):
+            return path
+    return None
+
+
+def monitor_quick_tunnel_url(cf_process):
+    """Read cloudflared output in background and save the trycloudflare.com URL."""
+    url_pattern = re.compile(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com")
+    if cf_process.stderr:
+        for line in iter(cf_process.stderr.readline, ""):
+            match = url_pattern.search(line)
+            if match:
+                URL_FILE.parent.mkdir(parents=True, exist_ok=True)
+                URL_FILE.write_text(match.group(0), encoding="utf-8")
+
+
+def choose_tunnel_mode():
+    """Display connection mode options to the user."""
+    print("\n========================================================")
+    print("  SELECT SERVER CONNECTION MODE")
+    print("========================================================")
+    print("  1. Cloudflare Quick Tunnel (Free - No Domain Required)")
+    print("  2. Cloudflare Zero Trust   (Custom Domain)")
+    print("  3. Local Only              (Wi-Fi / Localhost)")
+    print("========================================================")
+
+    while True:
+        choice = input("Enter your choice (1 / 2 / 3) [Default: 1]: ").strip() or "1"
+        if choice in {"1", "2", "3"}:
+            return choice
+        print("Invalid choice. Please enter 1, 2, or 3.")
+
+
+def main():
+    load_local_env()
+    configure_admin_password()
+
+    if URL_FILE.exists():
+        URL_FILE.unlink()
+    URL_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    mode = choose_tunnel_mode()
+    cf_process = None
+
+    if mode == "1":
+        cf_bin = find_cloudflared()
+        if not cf_bin:
+            print("\n[ERROR] 'cloudflared' was not found on this system.")
+            print("Please install cloudflared first or select mode 2 / 3.")
+            input("Press Enter to exit...")
+            sys.exit(1)
+
+        print("\n[1/2] Starting Cloudflare Quick Tunnel (trycloudflare.com)...")
+        cf_process = subprocess.Popen(
+            [cf_bin, "tunnel", "--url", TARGET_URL],
+            cwd=BASE_DIR,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        threading.Thread(target=monitor_quick_tunnel_url, args=(cf_process,), daemon=True).start()
+
+        for _ in range(30):
+            if URL_FILE.exists() or cf_process.poll() is not None:
+                break
+            time.sleep(0.5)
+
+        if cf_process.poll() is not None:
+            print("[ERROR] Failed to start Quick Tunnel.")
+            input("Press Enter to exit...")
+            sys.exit(1)
+
+    elif mode == "2":
+        domain = os.environ.get("CF_DOMAIN") or input("Enter your Zero Trust domain (e.g., https://domain.com): ").strip()
+        if not domain.startswith("http"):
+            domain = f"https://{domain}"
+        URL_FILE.write_text(domain, encoding="utf-8")
+
+        token = os.environ.get("CF_TUNNEL_TOKEN", "").strip()
+        if token:
+            cf_bin = find_cloudflared()
+            if cf_bin:
+                print(f"\n[1/2] Starting Cloudflare Zero Trust Tunnel with token ({domain})...")
+                cf_process = subprocess.Popen(
+                    [cf_bin, "tunnel", "run", "--token", token],
+                    cwd=BASE_DIR,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+        else:
+            print(f"\n[1/2] Using existing Cloudflare Zero Trust service ({domain})...")
+
+    else:
+        URL_FILE.write_text(TARGET_URL, encoding="utf-8")
+        print(f"\n[1/2] Local mode selected ({TARGET_URL})...")
+
+    print("[2/2] Starting Server & Live Visitor Monitor...")
+    os.environ["GALLERY_CONFIG_READY"] = "1"
+
+    from app import app, bina_jadual, console
+
+    def run_flask():
+        app.run(host="0.0.0.0", port=PORT, debug=False, use_reloader=False)
+
+    threading.Thread(target=run_flask, daemon=True).start()
+    time.sleep(0.5)
+
+    console.print("\n[bold green]Server is live! (Press CTRL+C to stop)[/bold green]\n")
+    try:
+        with Live(bina_jadual(), refresh_per_second=2, console=console) as live:
+            while True:
+                time.sleep(0.5)
+                live.update(bina_jadual())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if cf_process and cf_process.poll() is None:
+            cf_process.terminate()
+            try:
+                cf_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                cf_process.kill()
+        if URL_FILE.exists():
+            URL_FILE.unlink()
+        print("\n[DONE] Server stopped.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"\n[CRITICAL ERROR] {e}")
+        input("Press Enter to close this window...")
