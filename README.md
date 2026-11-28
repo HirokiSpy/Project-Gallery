@@ -4,54 +4,56 @@
 ![Flask](https://img.shields.io/badge/Flask-000000?style=flat&logo=flask&logoColor=white)
 ![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white)
 
-A simple Flask and HTML image gallery. This project uses local JSON files and folders without a third-party database.
+A small image gallery built with Python, Flask and HTML. It stores gallery metadata in a local JSON file and images in a folder; it does not use a third-party database.
 
 ## Features
 
-- Separate gallery passcode and admin password
-- Hashed gallery, admin and image PIN passwords
-- PNG, JPG, JPEG, GIF and WebP uploads up to 10 MB
-- Custom uploader names and name colours
-- Optional PIN protection for deleting images
-- Responsive gallery layout and image lightbox
+- Gallery passcode lock screen
+- Separate admin login
+- Hashed gallery, admin and optional image-deletion PIN credentials
+- PNG, JPG, JPEG, GIF and WebP uploads, with a 10 MB request limit
+- Custom uploader name and name colour
+- Responsive gallery layout and lightbox viewer
 - Terminal-based visitor monitor
 - Admin online status indicator
-- Failed-login rate limiting and temporary cooldown
-- Quick Tunnel, Zero Trust or local-only modes
-- HTTP/HTTPS-aware session cookie configuration
-- Flask debug mode disabled during normal startup
+- Temporary cooldown after repeated failed login attempts
+- Local-only and Cloudflare tunnel modes through the optional launcher
 
 ## Project Structure
 
 ```text
 Project-Gallery/
 ├── app.py                 # Flask application and routes
-├── security_config.py     # Password configuration and secret key setup
-├── run_galeri.py          # Main launcher with connection options
-├── start_website.py       # Alternative Python launcher
-├── start_galeri.bat       # Windows launcher for run_galeri.py
+├── security_config.py     # Local credential setup and configuration loading
+├── start_website.py       # Optional launcher and connection-mode menu
 ├── start_website.bat      # Windows launcher for start_website.py
 ├── templates/
-│   └── index.html         # Gallery interface and JavaScript
+│   └── index.html         # Gallery interface and browser-side code
 ├── uploads/               # Uploaded image files
-├── data.json              # Gallery metadata in JSON format
+├── data.json              # Gallery metadata (created locally if missing)
 ├── requirements.txt       # Python dependencies
-├── .env.example           # Example environment variables
+├── .env.example           # Example Cloudflare environment settings
 └── .gitignore
 ```
+
+`run_galeri.py` and `start_galeri.bat` are not part of the current project files.
 
 ## Requirements
 
 - Python 3.10 or newer
 - `pip`
-- Cloudflared only for public Cloudflare connections
+- `cloudflared` only if you choose to use a Cloudflare tunnel
 
 ## Installation
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/HirokiSpy/Project-Gallery.git
 cd Project-Gallery
 ```
+
+Create a virtual environment and install the dependencies.
 
 ### Windows
 
@@ -69,115 +71,77 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-## Getting Started
+## Run the Gallery
 
-Recommended launcher:
-
-```bash
-python run_galeri.py
-```
-
-On Windows, you can also open `start_galeri.bat`.
-
-Alternatively, start the Flask server directly:
+### Run Flask directly
 
 ```bash
 python app.py
 ```
 
-Then open:
+On first start, the application asks you to create a gallery passcode of at least 4 characters and an admin password of at least 8 characters. It stores their hashes and a generated Flask secret key locally under `instance/`.
+
+Open <http://127.0.0.1:5000> in your browser. Use `Ctrl+C` in the terminal to stop the server.
+
+### Optional launcher
+
+The optional launcher provides a menu for Cloudflare Quick Tunnel, Cloudflare Zero Trust, or local-only use:
+
+```bash
+python start_website.py
+```
+
+On Windows, you can also run:
 
 ```text
-http://127.0.0.1:5000
+start_website.bat
 ```
 
-On the first run, the launcher asks for:
+The launcher uses `cloudflared` for tunnel options. For local-only use, choose the local mode from its menu.
 
-- A gallery passcode of at least 4 characters
-- An admin password of at least 8 characters
+## Cloudflare Settings
 
-Both passwords are stored as hashes. A random Flask secret key is generated locally.
-
-## Connection Modes
-
-`run_galeri.py` and `start_website.py` provide three modes:
-
-1. **Quick Tunnel** — creates a temporary `trycloudflare.com` URL
-2. **Zero Trust** — uses a Cloudflare domain or tunnel token
-3. **Local Only** — allows access through localhost or the local network
-
-For Zero Trust, copy `.env.example` to `.env`:
+The launcher can read settings from a local `.env` file. Copy `.env.example` to `.env` and set the values you need:
 
 ```env
-CF_DOMAIN=https://your-domain.example
+CF_DOMAIN=https://gallery.example.com
 CF_TUNNEL_TOKEN=your-tunnel-token
 PORT=5000
-GALLERY_HTTPS=1
 ```
 
-Do not commit `.env` or tunnel credentials to the repository.
+Keep `.env` and tunnel tokens private. Do not commit them to Git.
 
-## Data Storage
+## Local File Storage
 
-This project deliberately uses local files instead of a third-party database:
+The project intentionally uses simple files instead of a database:
 
-- `data.json` stores metadata such as uploader name, filename and colour
-- `uploads/` stores uploaded image files
-- `instance/admin_config.json` stores password hashes and the Flask secret key
-- `instance/tunnel_url.txt` stores the temporary tunnel or local URL
+- `data.json` stores image metadata such as uploader name, filename, PIN hash and display colour.
+- `uploads/` contains the uploaded images.
+- `instance/admin_config.json` stores password hashes and the Flask secret key.
+- `instance/tunnel_url.txt` is used by the launcher to show the current local or public URL.
 
-`data.json` is protected by a local read/write lock. Writes use a temporary `data.json.tmp` file before atomically replacing the main file.
+Keep your `data.json`, `uploads/` and `instance/` folder backed up if you want to preserve the gallery and its credentials. These files may contain private information and should not be shared publicly.
 
-## Upload Validation
+## Security Notes
 
-Uploads must meet these requirements:
+- Passwords and image PINs are stored as hashes for new records.
+- Repeated failed gallery/admin logins trigger a temporary cooldown.
+- Upload size is limited to 10 MB and filenames are generated by the application.
+- Gallery access is managed through Flask session cookies.
+- The built-in Flask development server is intended for personal or learning use, not as a hardened production server.
+- Do not expose the app publicly unless you understand the security and privacy implications of doing so.
 
-- Filename extension must be PNG, JPG, JPEG, GIF or WebP
-- MIME type must start with `image/`
-- Request size must not exceed 10 MB
-- Filenames are generated randomly using UUID
-- Name colours must use six-character HEX format, such as `#c084fc`
+## Dependencies
 
-For public or untrusted use, validating the actual image contents with an image library is recommended.
+Install the Python dependencies with:
 
-## Visitor IP Handling
-
-The server obtains an IPv4 address from:
-
-1. `request.remote_addr`
-2. A validated `CF-Connecting-IP` header
-
-The `/log-ip` endpoint does not accept an IP address directly from the request body. IPv4 values are validated before being stored in the session or displayed by the visitor monitor.
-
-## Security and Limitations
-
-- Passwords and PINs are not stored as plain text
-- Failed login attempts are limited with a 120-second cooldown
-- Uploaded filenames are sanitised and replaced with UUID names
-- Session cookies use `HTTPONLY` and `SAMESITE=Lax`
-- Secure cookies can be enabled with `GALLERY_HTTPS=1` when using HTTPS
-- Runtime files, secrets and user data are excluded by `.gitignore`
-- JSON operations are protected against overlapping writes within one process
-- High-scale or multi-process deployment would require external coordination or a database
-
-## Git-Ignored Files
-
-The following files and folders should not be committed:
-
-- `.env`
-- `instance/`
-- `data.json`
-- `data.json.tmp`
-- `uploads/*`, except `.gitkeep`
-- `.venv/` or `venv/`
-- Python cache files
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## Purpose
 
-- Practising Python and Flask development
-- Learning authentication and session handling
-- Experimenting with responsive user interfaces
-- Building small projects for personal learning and use
+This project is for learning Python and Flask, experimenting with a simple gallery interface, and personal use.
 
 ## License
 
