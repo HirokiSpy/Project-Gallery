@@ -637,6 +637,7 @@
             padding: 28px 16px 13px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
             font-size: 0.95rem;
             font-weight: 700;
@@ -646,12 +647,34 @@
             pointer-events: none;
         }
 
+        .label-nama-kiri {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .teks-nama {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .label-nama .dot-nama {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: var(--tag-color);
             box-shadow: 0 0 10px var(--tag-color);
+            flex-shrink: 0;
+        }
+
+        .stat-kad-kanan {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: #e9d5ff;
             flex-shrink: 0;
         }
 
@@ -790,7 +813,8 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .lightbox.aktif {
@@ -799,27 +823,35 @@
 
         .lightbox-kotak {
             position: relative;
-            max-width: min(92vw, 960px);
-            max-height: 88vh;
+            width: 100%;
+            max-width: 780px;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 18px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
         }
 
         .lightbox-kotak img {
             max-width: 100%;
-            max-height: 78vh;
+            max-height: 52vh;
             object-fit: contain;
             border-radius: var(--radius-md);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
         }
 
         .lightbox-aksi {
+            width: 100%;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             gap: 10px;
         }
 
@@ -828,12 +860,12 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.98rem;
+            font-size: 0.96rem;
             font-weight: 700;
             color: var(--tag-color);
-            background: var(--bg-card);
+            background: var(--bg-input);
             border: 1px solid var(--border-subtle);
-            padding: 8px 18px;
+            padding: 7px 15px;
             border-radius: 999px;
         }
 
@@ -846,6 +878,40 @@
             flex-shrink: 0;
         }
 
+        .interaksi-butang-wrap {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-interaksi {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+
+        .btn-interaksi:hover {
+            border-color: var(--border-focus);
+            background: rgba(192, 132, 252, 0.16);
+        }
+
+        .btn-interaksi.aktif-like {
+            border-color: rgba(244, 63, 94, 0.55);
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+
         .lightbox-btn-padam {
             display: inline-flex;
             align-items: center;
@@ -856,7 +922,7 @@
             background: rgba(244, 63, 94, 0.18);
             color: #fecdd3;
             font-family: inherit;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
@@ -869,6 +935,112 @@
 
         .lightbox-btn-padam.tersembunyi {
             display: none;
+        }
+
+        .panel-komen-lightbox {
+            width: 100%;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tajuk-komen {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+        }
+
+        .senarai-komen {
+            max-height: 155px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-komen {
+            background: rgba(192, 132, 252, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 0.86rem;
+        }
+
+        .komen-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+        }
+
+        .komen-penulis {
+            font-weight: 700;
+            color: #e9d5ff;
+        }
+
+        .komen-kosong {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            padding: 6px 2px;
+        }
+
+        .borang-komen {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .input-komen-nama {
+            flex: 0 1 150px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.86rem;
+        }
+
+        .input-komen-teks {
+            flex: 1 1 220px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.86rem;
+        }
+
+        .input-komen-nama:focus,
+        .input-komen-teks:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .btn-hantar-komen {
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .status-kongsi {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #86efac;
+            min-height: 18px;
+            text-align: right;
+            width: 100%;
         }
 
         .lightbox-tutup {
@@ -887,6 +1059,7 @@
             display: grid;
             place-items: center;
             transition: background 0.2s, transform 0.2s;
+            z-index: 210;
         }
 
         .lightbox-tutup:hover {
@@ -982,7 +1155,7 @@
     <div class="footer-wrap">
         <hr class="garis-footer">
         <footer>
-            <span>&copy; 2026 <strong>Project Gallery by hiroki</strong>.</span>
+            <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
         </footer>
     </div>
 {% else %}
@@ -1054,6 +1227,9 @@
             {% if senarai_data %}
                 {% for item in senarai_data %}
                     {% set boleh_padam = true if (is_admin or item.ada_pin) else false %}
+                    {% set likes_kiraan = item.likes if item.likes is defined else 0 %}
+                    {% set komen_senarai = item.comments if item.comments is defined else [] %}
+                    {% set sudah_like = true if (item.fail in liked_files) else false %}
                     <div
                         class="kad-gambar"
                         data-src="/uploads/{{ item.fail }}"
@@ -1061,6 +1237,9 @@
                         data-nama="{{ item.nama }}"
                         data-warna="{{ item.warna or '#c084fc' }}"
                         data-boleh-padam="{{ '1' if boleh_padam else '0' }}"
+                        data-likes="{{ likes_kiraan }}"
+                        data-liked="{{ '1' if sudah_like else '0' }}"
+                        data-comments='{{ komen_senarai | tojson }}'
                     >
                         {% if boleh_padam %}
                             <button type="button" class="btn-padam" title="Delete image" aria-label="Delete image by {{ item.nama }}">
@@ -1073,8 +1252,14 @@
                         {% endif %}
                         <img src="/uploads/{{ item.fail }}" loading="lazy" alt="Image by {{ item.nama }}">
                         <div class="label-nama">
-                            <span class="dot-nama" aria-hidden="true"></span>
-                            <span class="teks-nama">{{ item.nama }}</span>
+                            <span class="label-nama-kiri">
+                                <span class="dot-nama" aria-hidden="true"></span>
+                                <span class="teks-nama">{{ item.nama }}</span>
+                            </span>
+                            <span class="stat-kad-kanan">
+                                <span class="kiraan-like-kad">♥ {{ likes_kiraan }}</span>
+                                <span class="kiraan-komen-kad">💬 {{ komen_senarai | length }}</span>
+                            </span>
                         </div>
                     </div>
                 {% endfor %}
@@ -1135,7 +1320,7 @@
     <div class="footer-wrap">
         <hr class="garis-footer">
         <footer>
-            <span>&copy; 2026 <strong>Project Gallery by hiroki</strong>.</span>
+            <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
         </footer>
     </div>
 
@@ -1160,7 +1345,43 @@
                     <span class="dot-nama" id="dotLightbox" aria-hidden="true"></span>
                     <span id="teksLightbox"></span>
                 </div>
-                <button type="button" class="lightbox-btn-padam tersembunyi" id="padamLightbox">Delete Image</button>
+
+                <div class="interaksi-butang-wrap">
+                    <button type="button" class="btn-interaksi" id="btnLikeLightbox">
+                        <span>♥</span>
+                        <span id="teksLikeLightbox">Like</span>
+                        <span id="kiraanLikeLightbox">0</span>
+                    </button>
+                    <button type="button" class="btn-interaksi" id="btnShareLightbox">
+                        <span>↗</span>
+                        <span>Share</span>
+                    </button>
+                    <button type="button" class="lightbox-btn-padam tersembunyi" id="padamLightbox">Delete Image</button>
+                </div>
+            </div>
+            <div class="status-kongsi" id="statusKongsi"></div>
+
+            <div class="panel-komen-lightbox">
+                <div class="tajuk-komen" id="tajukKomenLightbox">Comments (0)</div>
+                <div class="senarai-komen" id="senaraiKomenLightbox"></div>
+                <form class="borang-komen" id="borangKomenLightbox">
+                    <input
+                        type="text"
+                        class="input-komen-nama"
+                        id="inputNamaKomen"
+                        placeholder="Your name..."
+                        maxlength="40"
+                    >
+                    <input
+                        type="text"
+                        class="input-komen-teks"
+                        id="inputTeksKomen"
+                        placeholder="Write a comment..."
+                        maxlength="300"
+                        required
+                    >
+                    <button type="submit" class="btn-hantar-komen" id="btnHantarKomen">Post</button>
+                </form>
             </div>
         </div>
     </div>
@@ -1424,7 +1645,85 @@
             const teksLightbox = document.getElementById('teksLightbox');
             const tutupLightbox = document.getElementById('tutupLightbox');
             const padamLightbox = document.getElementById('padamLightbox');
+            const btnLikeLightbox = document.getElementById('btnLikeLightbox');
+            const teksLikeLightbox = document.getElementById('teksLikeLightbox');
+            const kiraanLikeLightbox = document.getElementById('kiraanLikeLightbox');
+            const btnShareLightbox = document.getElementById('btnShareLightbox');
+            const statusKongsi = document.getElementById('statusKongsi');
+            const tajukKomenLightbox = document.getElementById('tajukKomenLightbox');
+            const senaraiKomenLightbox = document.getElementById('senaraiKomenLightbox');
+            const borangKomenLightbox = document.getElementById('borangKomenLightbox');
+            const inputNamaKomen = document.getElementById('inputNamaKomen');
+            const inputTeksKomen = document.getElementById('inputTeksKomen');
             let kadAktifLightbox = null;
+
+            function bacaKomenKad(kad) {
+                try {
+                    const parsed = JSON.parse(kad.dataset.comments || '[]');
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function kemasKiniStatKad(kad) {
+                if (!kad) return;
+                const likes = Number(kad.dataset.likes || 0);
+                const comments = bacaKomenKad(kad);
+                const kiraanLikeKad = kad.querySelector('.kiraan-like-kad');
+                const kiraanKomenKad = kad.querySelector('.kiraan-komen-kad');
+                if (kiraanLikeKad) kiraanLikeKad.textContent = `♥ ${likes}`;
+                if (kiraanKomenKad) kiraanKomenKad.textContent = `💬 ${comments.length}`;
+            }
+
+            function renderKomen(comments) {
+                tajukKomenLightbox.textContent = `Comments (${comments.length})`;
+                senaraiKomenLightbox.innerHTML = '';
+                if (!comments.length) {
+                    const div = document.createElement('div');
+                    div.className = 'komen-kosong';
+                    div.textContent = 'No comments yet. Leave the first one!';
+                    senaraiKomenLightbox.appendChild(div);
+                    return;
+                }
+                comments.forEach((c) => {
+                    const item = document.createElement('div');
+                    item.className = 'item-komen';
+
+                    const meta = document.createElement('div');
+                    meta.className = 'komen-meta';
+
+                    const penulis = document.createElement('span');
+                    penulis.className = 'komen-penulis';
+                    penulis.textContent = c.author || 'Anonymous';
+
+                    const masa = document.createElement('span');
+                    masa.textContent = c.created_at || '';
+
+                    meta.appendChild(penulis);
+                    meta.appendChild(masa);
+
+                    const teks = document.createElement('div');
+                    teks.textContent = c.text || '';
+
+                    item.appendChild(meta);
+                    item.appendChild(teks);
+                    senaraiKomenLightbox.appendChild(item);
+                });
+                senaraiKomenLightbox.scrollTop = senaraiKomenLightbox.scrollHeight;
+            }
+
+            function sinkronLightboxDenganKad(kad) {
+                const likes = Number(kad.dataset.likes || 0);
+                const liked = kad.dataset.liked === '1';
+                const comments = bacaKomenKad(kad);
+
+                kiraanLikeLightbox.textContent = String(likes);
+                teksLikeLightbox.textContent = liked ? 'Liked' : 'Like';
+                btnLikeLightbox.classList.toggle('aktif-like', liked);
+                renderKomen(comments);
+                kemasKiniStatKad(kad);
+            }
 
             function semakKosong() {
                 if (galeriGrid.querySelectorAll('.kad-gambar').length === 0 && !document.getElementById('mesejKosong')) {
@@ -1477,6 +1776,82 @@
                 semakKosong();
             }
 
+            btnLikeLightbox.addEventListener('click', async () => {
+                if (!kadAktifLightbox) return;
+                const fail = kadAktifLightbox.dataset.fail || '';
+                if (!fail) return;
+                btnLikeLightbox.disabled = true;
+                try {
+                    const res = await fetch(`/like/${encodeURIComponent(fail)}`, {
+                        method: 'POST'
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        kadAktifLightbox.dataset.likes = String(hasil.likes);
+                        kadAktifLightbox.dataset.liked = hasil.liked ? '1' : '0';
+                        sinkronLightboxDenganKad(kadAktifLightbox);
+                    }
+                } catch {
+                    statusKongsi.textContent = 'Failed to update like.';
+                } finally {
+                    btnLikeLightbox.disabled = false;
+                }
+            });
+
+            btnShareLightbox.addEventListener('click', async () => {
+                if (!kadAktifLightbox) return;
+                const pautanPenuh = `${window.location.origin}/?img=${encodeURIComponent(kadAktifLightbox.dataset.fail || '')}`;
+                const tajukKongsi = `Image by ${kadAktifLightbox.dataset.nama || 'Visitor'} - Project Gallery`;
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title: tajukKongsi, url: pautanPenuh });
+                        statusKongsi.textContent = 'Shared!';
+                        return;
+                    } catch (err) {
+                        if (err && err.name === 'AbortError') return;
+                    }
+                }
+
+                try {
+                    await navigator.clipboard.writeText(pautanPenuh);
+                    statusKongsi.textContent = 'Link copied to clipboard!';
+                } catch {
+                    statusKongsi.textContent = pautanPenuh;
+                }
+            });
+
+            borangKomenLightbox.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!kadAktifLightbox) return;
+                const fail = kadAktifLightbox.dataset.fail || '';
+                const author = inputNamaKomen.value.trim() || 'Anonymous';
+                const text = inputTeksKomen.value.trim();
+                if (!fail || !text) return;
+
+                const btnHantar = document.getElementById('btnHantarKomen');
+                btnHantar.disabled = true;
+                try {
+                    const res = await fetch(`/comment/${encodeURIComponent(fail)}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ author, text })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        kadAktifLightbox.dataset.comments = JSON.stringify(hasil.comments || []);
+                        inputTeksKomen.value = '';
+                        sinkronLightboxDenganKad(kadAktifLightbox);
+                    } else {
+                        window.alert(hasil.error || 'Failed to post comment.');
+                    }
+                } catch {
+                    window.alert('Failed to connect to the server.');
+                } finally {
+                    btnHantar.disabled = false;
+                }
+            });
+
             document.querySelectorAll('.kad-gambar').forEach((kad) => {
                 const nama = kad.dataset.nama || '';
                 const fail = kad.dataset.fail || '';
@@ -1491,6 +1866,7 @@
                 kad.dataset.warna = warnaPilihan;
                 const label = kad.querySelector('.label-nama');
                 if (label) label.style.setProperty('--tag-color', warnaPilihan);
+                kemasKiniStatKad(kad);
 
                 const btnPadam = kad.querySelector('.btn-padam');
                 if (btnPadam && bolehPadam) {
@@ -1502,11 +1878,13 @@
 
                 kad.addEventListener('click', () => {
                     kadAktifLightbox = kad;
+                    statusKongsi.textContent = '';
                     imgLightbox.src = kad.dataset.src;
                     imgLightbox.alt = nama;
                     teksLightbox.textContent = nama;
                     kapsyenLightbox.style.setProperty('--tag-color', kad.dataset.warna);
                     padamLightbox.classList.toggle('tersembunyi', !bolehPadam);
+                    sinkronLightboxDenganKad(kad);
                     lightbox.classList.add('aktif');
                 });
             });
@@ -1516,6 +1894,7 @@
             function tutupModal() {
                 lightbox.classList.remove('aktif');
                 imgLightbox.src = '';
+                statusKongsi.textContent = '';
                 kadAktifLightbox = null;
             }
 
@@ -1529,6 +1908,15 @@
                     if (lightbox.classList.contains('aktif')) tutupModal();
                 }
             });
+
+            const params = new URLSearchParams(window.location.search);
+            const targetImg = params.get('img');
+            if (targetImg) {
+                const kadSasaran = Array.from(document.querySelectorAll('.kad-gambar')).find(
+                    (k) => k.dataset.fail === targetImg
+                );
+                if (kadSasaran) kadSasaran.click();
+            }
         }
     </script>
 </body>
