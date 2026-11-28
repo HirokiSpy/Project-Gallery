@@ -214,6 +214,30 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .badge-account {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            max-width: 100%;
+            padding: 6px 12px;
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(236, 72, 153, 0.1));
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.12);
+            font-size: 0.78rem;
+        }
+
+        .badge-account-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .badge-account-name {
+            overflow-wrap: anywhere;
+            color: #f3e8ff;
+            font-weight: 800;
+        }
+
         .badge-admin-online {
             display: inline-flex;
             align-items: center;
@@ -432,6 +456,18 @@
             box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22);
         }
 
+        .pilihan-username {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .pilihan-username input {
+            accent-color: #c084fc;
+        }
+
         .warna-picker-wrap {
             display: inline-flex;
             align-items: center;
@@ -443,6 +479,18 @@
             font-size: 0.85rem;
             font-weight: 500;
             color: var(--text-secondary);
+        }
+
+        .warna-akaun-wrap {
+            width: 100%;
+            justify-content: space-between;
+            padding: 10px 14px;
+        }
+
+        .warna-akaun-kiri {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .warna-picker-wrap input[type="color"] {
@@ -988,21 +1036,19 @@
             padding: 6px 2px;
         }
 
+        .komen-identiti {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .komen-identiti strong {
+            color: #e9d5ff;
+        }
+
         .borang-komen {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-        }
-
-        .input-komen-nama {
-            flex: 0 1 150px;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.86rem;
         }
 
         .input-komen-teks {
@@ -1016,7 +1062,6 @@
             font-size: 0.86rem;
         }
 
-        .input-komen-nama:focus,
         .input-komen-teks:focus {
             outline: none;
             border-color: var(--border-focus);
@@ -1121,7 +1166,11 @@
         }
     </style>
 </head>
-<body data-is-admin="{{ '1' if is_admin else '0' }}" data-unlocked="{{ '1' if unlocked else '0' }}">
+<body
+    data-is-admin="{{ '1' if is_admin else '0' }}"
+    data-unlocked="{{ '1' if unlocked else '0' }}"
+    data-authenticated="{{ '1' if authenticated else '0' }}"
+>
 
 {% if not unlocked %}
     <!-- Gallery Gate / Lock Screen -->
@@ -1158,6 +1207,79 @@
             <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
         </footer>
     </div>
+{% elif not authenticated %}
+    <main class="gate-wrap">
+        <div class="gate-card">
+            <div class="gate-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h1>Account Login</h1>
+            <p>First use of a username creates the account with your chosen colour. Use the same username and password to sign in again.</p>
+
+            <form class="gate-form" id="borangAkaun">
+                <input
+                    type="text"
+                    class="gate-input"
+                    id="inputUsername"
+                    placeholder="Username..."
+                    minlength="3"
+                    maxlength="32"
+                    pattern="[A-Za-z0-9_.-]{3,32}"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+                <input
+                    type="password"
+                    class="gate-input"
+                    id="inputPasswordAkaun"
+                    placeholder="Password (minimum 4 characters)..."
+                    minlength="4"
+                    maxlength="128"
+                    autocomplete="current-password"
+                    required
+                >
+                <div class="warna-picker-wrap warna-akaun-wrap" title="Choose your profile colour">
+                    <span class="warna-akaun-kiri">
+                        <span>Profile colour:</span>
+                        <input type="color" id="inputWarnaAkaun" value="#c084fc" aria-label="Choose your profile colour">
+                    </span>
+                    <span class="pratinjau-label" id="pratinjauWarnaAkaun">
+                        <span class="pratinjau-dot" id="pratinjauDotAkaun"></span>
+                        <span id="teksPratinjauAkaun">Username</span>
+                    </span>
+                </div>
+                <div class="gate-error" id="ralatAkaun" role="alert"></div>
+                <button type="submit" class="gate-btn" id="btnMasukAkaun">Create / Login</button>
+            </form>
+
+            <details>
+                <summary>Admin login</summary>
+                <form class="gate-form" id="borangAdminAkaun">
+                    <input
+                        type="password"
+                        class="gate-input"
+                        id="inputPasswordAdminAkaun"
+                        placeholder="Admin password..."
+                        autocomplete="current-password"
+                        required
+                    >
+                    <div class="gate-error" id="ralatAdminAkaun" role="alert"></div>
+                    <button type="submit" class="gate-btn" id="btnMasukAdminAkaun">Login Admin</button>
+                </form>
+            </details>
+        </div>
+    </main>
+
+    <div class="footer-wrap">
+        <hr class="garis-footer">
+        <footer>
+            <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
+        </footer>
+    </div>
 {% else %}
     <!-- Full Gallery View Once Unlocked -->
     <header>
@@ -1166,6 +1288,10 @@
                 <div class="tajuk-wrap">
                     <span class="badge-dot" aria-hidden="true"></span>
                     <h1>Project Gallery</h1>
+                    <span class="badge-account" aria-label="Signed in as {{ account_display_name or 'Admin' }}">
+                        <span class="badge-account-label">SIGNED IN</span>
+                        <strong class="badge-account-name">{{ account_display_name or 'Admin' }}</strong>
+                    </span>
                     <span
                         class="badge-admin-online {{ '' if admin_online else 'tersembunyi' }}"
                         id="badgeAdminOnline"
@@ -1226,7 +1352,19 @@
         <section class="galeri-luas" id="galeriGrid">
             {% if senarai_data %}
                 {% for item in senarai_data %}
-                    {% set boleh_padam = true if (is_admin or item.ada_pin) else false %}
+                    {% set item_owner = item.owner if item.owner is defined else none %}
+                    {% set owns_item = item_owner == account_username and account_username %}
+                    {% set legacy_pin = item_owner is none and (item.ada_pin or item.pin_hash or item.pin) %}
+                    {% set boleh_padam = true if (is_admin or owns_item or legacy_pin) else false %}
+                    {% set perlu_pin = true if (legacy_pin and not is_admin) else false %}
+                    {% set nama_paparan = item.nama %}
+                    {% if item.description is defined %}
+                        {% set nama_paparan = item.description %}
+                        {% if item.show_username %}
+                            {% set nama_pengguna = item.username if item.username is defined else item.nama %}
+                            {% set nama_paparan = nama_pengguna ~ ' - ' ~ item.description %}
+                        {% endif %}
+                    {% endif %}
                     {% set likes_kiraan = item.likes if item.likes is defined else 0 %}
                     {% set komen_senarai = item.comments if item.comments is defined else [] %}
                     {% set sudah_like = true if (item.fail in liked_files) else false %}
@@ -1234,15 +1372,16 @@
                         class="kad-gambar"
                         data-src="/uploads/{{ item.fail }}"
                         data-fail="{{ item.fail }}"
-                        data-nama="{{ item.nama }}"
+                        data-nama="{{ nama_paparan }}"
                         data-warna="{{ item.warna or '#c084fc' }}"
                         data-boleh-padam="{{ '1' if boleh_padam else '0' }}"
+                        data-perlu-pin="{{ '1' if perlu_pin else '0' }}"
                         data-likes="{{ likes_kiraan }}"
                         data-liked="{{ '1' if sudah_like else '0' }}"
                         data-comments='{{ komen_senarai | tojson }}'
                     >
                         {% if boleh_padam %}
-                            <button type="button" class="btn-padam" title="Delete image" aria-label="Delete image by {{ item.nama }}">
+                            <button type="button" class="btn-padam" title="Delete image" aria-label="Delete image: {{ nama_paparan }}">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M3 6h18"/>
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
@@ -1250,11 +1389,11 @@
                                 </svg>
                             </button>
                         {% endif %}
-                        <img src="/uploads/{{ item.fail }}" loading="lazy" alt="Image by {{ item.nama }}">
+                        <img src="/uploads/{{ item.fail }}" loading="lazy" alt="{{ nama_paparan }}">
                         <div class="label-nama">
                             <span class="label-nama-kiri">
                                 <span class="dot-nama" aria-hidden="true"></span>
-                                <span class="teks-nama">{{ item.nama }}</span>
+                                <span class="teks-nama">{{ nama_paparan }}</span>
                             </span>
                             <span class="stat-kad-kanan">
                                 <span class="kiraan-like-kad">♥ {{ likes_kiraan }}</span>
@@ -1279,21 +1418,15 @@
                     <path d="M12 9v4"/>
                     <path d="M12 17h.01"/>
                 </svg>
-                <span>Amaran: Jika muat naik tanpa PIN / password, gambar tidak boleh dipadam dan akan kekal selamanya.</span>
+                <span>Gambar yang dimuat naik hanya boleh dipadam oleh akaun yang memuat naiknya atau admin.</span>
             </div>
 
             <form method="POST" enctype="multipart/form-data" id="borangMuatNaik">
-                <input class="input-nama" type="text" name="nama" id="inputNama" placeholder="Enter your name..." required maxlength="40">
-                <input class="input-pin" type="password" name="pin" id="inputPin" placeholder="Delete PIN (optional)" maxlength="20" autocomplete="off">
-
-                <div class="warna-picker-wrap" title="Choose dot and name color">
-                    <span>Color:</span>
-                    <input type="color" name="warna_nama" id="inputWarna" value="#c084fc" aria-label="Choose dot and name color">
-                    <span class="pratinjau-label" id="pratinjauWarna">
-                        <span class="pratinjau-dot" id="pratinjauDot"></span>
-                        <span id="teksPratinjau">Name</span>
-                    </span>
-                </div>
+                <input class="input-nama" type="text" name="description" id="inputDescription" placeholder="Image description..." required maxlength="300">
+                <label class="pilihan-username">
+                    <input type="checkbox" name="show_username" value="1" checked>
+                    <span>Show my username on this image</span>
+                </label>
 
                 <label class="file-label" title="Choose image file">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1364,14 +1497,10 @@
             <div class="panel-komen-lightbox">
                 <div class="tajuk-komen" id="tajukKomenLightbox">Comments (0)</div>
                 <div class="senarai-komen" id="senaraiKomenLightbox"></div>
+                <div class="komen-identiti">
+                    Commenting as <strong>{{ account_display_name or ('Admin' if is_admin else 'Anonymous') }}</strong>
+                </div>
                 <form class="borang-komen" id="borangKomenLightbox">
-                    <input
-                        type="text"
-                        class="input-komen-nama"
-                        id="inputNamaKomen"
-                        placeholder="Your name..."
-                        maxlength="40"
-                    >
                     <input
                         type="text"
                         class="input-komen-teks"
@@ -1389,6 +1518,7 @@
 
     <script>
         const IS_UNLOCKED = document.body.dataset.unlocked === '1';
+        const IS_AUTHENTICATED = document.body.dataset.authenticated === '1';
 
         /* Send IPv4 for live visitor monitor */
         (async () => {
@@ -1441,9 +1571,82 @@
                     btnMasuk.textContent = 'Enter Gallery';
                 }
             });
+        } else if (!IS_AUTHENTICATED) {
+            const borangAkaun = document.getElementById('borangAkaun');
+            const inputUsername = document.getElementById('inputUsername');
+            const inputPasswordAkaun = document.getElementById('inputPasswordAkaun');
+            const inputWarnaAkaun = document.getElementById('inputWarnaAkaun');
+            const pratinjauWarnaAkaun = document.getElementById('pratinjauWarnaAkaun');
+            const pratinjauDotAkaun = document.getElementById('pratinjauDotAkaun');
+            const teksPratinjauAkaun = document.getElementById('teksPratinjauAkaun');
+            const ralatAkaun = document.getElementById('ralatAkaun');
+            const btnMasukAkaun = document.getElementById('btnMasukAkaun');
+
+            function kemasKiniPratinjauAkaun() {
+                const warna = inputWarnaAkaun.value;
+                const username = inputUsername.value.trim() || 'Username';
+                pratinjauWarnaAkaun.style.color = warna;
+                pratinjauDotAkaun.style.background = warna;
+                pratinjauDotAkaun.style.boxShadow = `0 0 8px ${warna}`;
+                teksPratinjauAkaun.textContent = username;
+            }
+
+            inputWarnaAkaun.addEventListener('input', kemasKiniPratinjauAkaun);
+            inputUsername.addEventListener('input', kemasKiniPratinjauAkaun);
+            kemasKiniPratinjauAkaun();
+
+            borangAkaun.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                ralatAkaun.textContent = '';
+                btnMasukAkaun.disabled = true;
+                try {
+                    const res = await fetch('/account/auth', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: inputUsername.value.trim(),
+                            password: inputPasswordAkaun.value,
+                            color: inputWarnaAkaun.value
+                        })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        window.location.reload();
+                        return;
+                    }
+                    ralatAkaun.textContent = hasil.error || 'Failed to create account or sign in.';
+                    inputPasswordAkaun.select();
+                } catch {
+                    ralatAkaun.textContent = 'Failed to connect to the server.';
+                } finally {
+                    btnMasukAkaun.disabled = false;
+                }
+            });
+
+            const borangAdminAkaun = document.getElementById('borangAdminAkaun');
+            const inputPasswordAdminAkaun = document.getElementById('inputPasswordAdminAkaun');
+            const ralatAdminAkaun = document.getElementById('ralatAdminAkaun');
+            borangAdminAkaun.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                ralatAdminAkaun.textContent = '';
+                try {
+                    const res = await fetch('/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: inputPasswordAdminAkaun.value })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        window.location.reload();
+                        return;
+                    }
+                    ralatAdminAkaun.textContent = hasil.error || 'Incorrect admin password.';
+                } catch {
+                    ralatAdminAkaun.textContent = 'Failed to connect to the server.';
+                }
+            });
         } else {
             const WARNA_KEY = 'galeri_warna_nama_v1';
-            const PIN_KEY = 'galeri_pin_owner_v1';
             const TAB_KEY = 'galeri_tab_aktif_v1';
             const IS_ADMIN = document.body.dataset.isAdmin === '1';
 
@@ -1497,12 +1700,6 @@
                 }
             } catch {}
 
-            const inputNama = document.getElementById('inputNama');
-            const inputPin = document.getElementById('inputPin');
-            const inputWarna = document.getElementById('inputWarna');
-            const pratinjauWarna = document.getElementById('pratinjauWarna');
-            const pratinjauDot = document.getElementById('pratinjauDot');
-            const teksPratinjau = document.getElementById('teksPratinjau');
             const inputGambar = document.getElementById('inputGambar');
             const teksFail = document.getElementById('teksFail');
             const borang = document.getElementById('borangMuatNaik');
@@ -1516,55 +1713,7 @@
                 }
             }
 
-            function simpanObjek(key, obj) {
-                localStorage.setItem(key, JSON.stringify(obj));
-            }
-
-            function simpanWarna(kunci, warna) {
-                const data = bacaObjek(WARNA_KEY);
-                data[kunci] = warna;
-                simpanObjek(WARNA_KEY, data);
-            }
-
-            function simpanPin(kunci, pin) {
-                if (!pin) return;
-                const data = bacaObjek(PIN_KEY);
-                data[kunci] = pin;
-                simpanObjek(PIN_KEY, data);
-            }
-
-            function cariPinTersimpan(fail, nama) {
-                const data = bacaObjek(PIN_KEY);
-                return data[`fail:${fail}`] || data[`nama:${nama}`] || '';
-            }
-
-            function kemasKiniPratinjau() {
-                const warna = inputWarna.value;
-                const nama = inputNama.value.trim() || 'Name';
-                pratinjauWarna.style.color = warna;
-                pratinjauDot.style.background = warna;
-                pratinjauDot.style.boxShadow = `0 0 8px ${warna}`;
-                teksPratinjau.textContent = nama;
-            }
-
-            inputWarna.addEventListener('input', kemasKiniPratinjau);
-            inputNama.addEventListener('input', kemasKiniPratinjau);
-            kemasKiniPratinjau();
-
             borang.addEventListener('submit', () => {
-                const nama = inputNama.value.trim();
-                const pin = inputPin.value.trim();
-                const namaFail = inputGambar.files && inputGambar.files[0] ? inputGambar.files[0].name : '';
-                const warna = inputWarna.value;
-
-                if (namaFail) {
-                    simpanWarna(`fail:${namaFail}`, warna);
-                    simpanPin(`fail:${namaFail}`, pin);
-                }
-                if (nama) {
-                    simpanWarna(`nama:${nama}`, warna);
-                    simpanPin(`nama:${nama}`, pin);
-                }
                 try {
                     sessionStorage.setItem(TAB_KEY, 'gambar');
                 } catch {}
@@ -1653,7 +1802,6 @@
             const tajukKomenLightbox = document.getElementById('tajukKomenLightbox');
             const senaraiKomenLightbox = document.getElementById('senaraiKomenLightbox');
             const borangKomenLightbox = document.getElementById('borangKomenLightbox');
-            const inputNamaKomen = document.getElementById('inputNamaKomen');
             const inputTeksKomen = document.getElementById('inputTeksKomen');
             let kadAktifLightbox = null;
 
@@ -1738,7 +1886,7 @@
             async function prosesPadamKad(kad) {
                 if (!kad) return;
                 if (kad.dataset.bolehPadam !== '1') {
-                    window.alert('This image was uploaded without a PIN and cannot be deleted.');
+                    window.alert('You do not have permission to delete this image.');
                     return;
                 }
 
@@ -1748,9 +1896,8 @@
 
                 if (IS_ADMIN) {
                     if (!window.confirm(`[ADMIN] Delete image uploaded by "${nama}"?`)) return;
-                } else {
-                    const pinCadangan = cariPinTersimpan(fail, nama);
-                    const pinDimasukkan = window.prompt(`Enter the secret PIN to delete "${nama}"'s image:`, pinCadangan);
+                } else if (kad.dataset.perluPin === '1') {
+                    const pinDimasukkan = window.prompt(`Enter the legacy PIN to delete "${nama}"'s image:`);
                     if (pinDimasukkan === null) return;
                     pinUntukDihantar = pinDimasukkan.trim();
                 }
@@ -1763,7 +1910,7 @@
                     });
                     const hasil = await res.json().catch(() => ({}));
                     if (!res.ok || hasil.ok === false) {
-                        window.alert(hasil.error || 'Incorrect PIN! Image was not deleted.');
+                        window.alert(hasil.error || 'Image was not deleted.');
                         return;
                     }
                 } catch {
@@ -1825,7 +1972,6 @@
                 e.preventDefault();
                 if (!kadAktifLightbox) return;
                 const fail = kadAktifLightbox.dataset.fail || '';
-                const author = inputNamaKomen.value.trim() || 'Anonymous';
                 const text = inputTeksKomen.value.trim();
                 if (!fail || !text) return;
 
@@ -1835,7 +1981,7 @@
                     const res = await fetch(`/comment/${encodeURIComponent(fail)}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ author, text })
+                        body: JSON.stringify({ text })
                     });
                     const hasil = await res.json().catch(() => ({}));
                     if (res.ok && hasil.ok) {
