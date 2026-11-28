@@ -13,7 +13,6 @@ A secure, responsive image gallery built with Flask. The project is maintained f
 - Password hashing for gallery, admin, and per-image PIN protection
 - Upload support for PNG, JPG, JPEG, GIF, and WebP images (maximum 10 MB)
 - Custom uploader name and name colour
-- Optional PIN for protecting individual images from deletion
 - Responsive desktop and mobile gallery layout
 - Lightbox image viewer
 - Live visitor monitor in the terminal
@@ -57,132 +56,61 @@ cd Project-Gallery
 
 Create and activate a virtual environment (recommended):
 
-### Windows
-
 ```powershell
 py -m venv .venv
 .venv\Scripts\activate
 py -m pip install -r requirements.txt
 ```
 
-### Linux / macOS
+Linux / macOS:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
-## Running the Gallery
-
-### Recommended launcher
+## Running
 
 ```bash
 python run_galeri.py
 ```
 
-On Windows, you can also double-click:
+The launcher asks for credentials on first use, then offers local, Quick Tunnel, or Zero Trust modes.
 
-```text
-start_galeri.bat
-```
+## Storage
 
-The launcher asks you to configure credentials on first use, then lets you choose:
+This project intentionally uses simple local files without a third-party database:
 
-1. **Cloudflare Quick Tunnel** — uses a temporary `trycloudflare.com` URL
-2. **Cloudflare Zero Trust** — uses a custom domain or tunnel token
-3. **Local Only** — available through `http://127.0.0.1:5000`
+- `data.json` stores gallery metadata.
+- `uploads/` stores uploaded image files.
+- `instance/admin_config.json` stores credential hashes and the Flask secret key.
+- `instance/tunnel_url.txt` temporarily stores the active tunnel or local URL.
 
-Use `CTRL+C` to stop the server.
+Operations that read or change `data.json` are serialized with a local lock, and writes use an atomic temporary file.
 
-### Windows batch launcher
+## IP Address Handling
 
-```powershell
-start_website.bat
-```
+The server derives visitor IPv4 from `request.remote_addr` or the validated `CF-Connecting-IP` header. `/log-ip` no longer accepts a user-supplied IP address.
 
-### Direct Flask server
+## Upload Validation
 
-```bash
-python app.py
-```
+Uploads must:
 
-Open <http://localhost:5000> in a browser.
-
-`app.py` will create `instance/admin_config.json` automatically only through its first-run setup flow. The recommended approach is to run `run_galeri.py` or `start_website.py`.
-
-## First-Time Setup
-
-When starting the application, you will be prompted to set:
-
-- A gallery passcode of at least 4 characters
-- An admin password of at least 8 characters
-
-Both passwords are stored as hashes, and a random Flask secret key is generated locally in:
-
-```text
-instance/admin_config.json
-```
-
-Existing credentials can be changed when the launcher starts and is given permission to update them.
-
-## Cloudflare Configuration
-
-### Quick Tunnel
-
-Install `cloudflared` and ensure the `cloudflared` command is available in your `PATH`, then select option 1 in `run_galeri.py`.
-
-### Zero Trust
-
-You can enter a domain interactively or provide values through a local `.env` file:
-
-```env
-CF_DOMAIN=https://gallery.example.com
-CF_TUNNEL_TOKEN=your-tunnel-token
-```
-
-Never commit `.env` or tunnel credentials to Git.
-
-## Security
-
-- Gallery access and admin access use separate credentials
-- Passwords and image deletion PINs are stored as hashes
-- The local configuration file is excluded from version control
-- Failed attempts are limited with a 120-second cooldown
-- Uploaded filenames are generated securely and restricted to supported image formats
-- Request size is limited to 10 MB
-- Flask debug mode is disabled
-- The application relies on session cookies for gallery and admin access
-
-Keep `instance/`, `uploads/`, `data.json`, and `.env` private when they contain personal or runtime data.
-
-## Data Storage
-
-- `data.json` stores image metadata
-- `uploads/` stores uploaded image files
-- `instance/admin_config.json` stores password hashes and the Flask secret key
-- `instance/tunnel_url.txt` temporarily stores the active public or local URL
-
-## Supported Environment Variables
-
-| Variable | Default | Purpose |
-|---|---:|---|
-| `PORT` | `5000` | Port used by the Flask server |
-| `CF_DOMAIN` | — | Cloudflare Zero Trust custom domain |
-| `CF_TUNNEL_TOKEN` | — | Token for starting a Cloudflare tunnel |
+- use a supported filename extension;
+- declare an image MIME type;
+- remain within the 10 MB request limit.
 
 ## Purpose
-
-This repository is maintained for:
 
 - Practising Python and Flask development
 - Exploring web security and authentication concepts
 - Experimenting with responsive UI design
-- Building and sharing small projects for fun
+- Building small projects for fun
 
 ## License
 
-Unless otherwise stated within a project, the contents of this repository are provided for personal and educational use.
+Provided for personal and educational use.
 
 ## Author
 

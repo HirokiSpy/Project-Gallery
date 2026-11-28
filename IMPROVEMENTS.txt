@@ -1,0 +1,5 @@
+line 111-112: Update endpoint /log-ip to use server-derived IPv4 and never accept client-submitted IP.
+line 206-213: Validate IPv4 and stop trusting user-controlled address headers.
+line 214-225: Ignore stale visitor entries after 15 minutes.
+line 300-324: Validate name colour and image MIME before storing metadata.
+line 407-425: Serialize delete metadata and image operations with KUNCI_DATA.

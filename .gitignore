@@ -4,6 +4,7 @@
 !.env.example
 instance/
 data.json
+data.json.tmp
 uploads/*
 !uploads/.gitkeep
 __pycache__/
