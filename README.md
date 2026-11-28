@@ -1,153 +1,184 @@
 # Project-Gallery
 
-A collection of small projects created for learning, experimentation, and fun.
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=flat&logo=flask&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white)
 
-## About
+A secure, responsive image gallery built with Flask. The project is maintained for learning, experimentation, and fun.
 
-Project-Gallery is a personal space for building and showcasing lightweight projects. Each project explores different ideas, technologies, or approaches while keeping the scope simple and enjoyable.
+## Features
 
-## Projects
+- Gallery passcode lock screen
+- Separate admin password and admin mode
+- Password hashing for gallery, admin, and per-image PIN protection
+- Upload support for PNG, JPG, JPEG, GIF, and WebP images (maximum 10 MB)
+- Custom uploader name and name colour
+- Optional PIN for protecting individual images from deletion
+- Responsive desktop and mobile gallery layout
+- Lightbox image viewer
+- Live visitor monitor in the terminal
+- Admin online status indicator
+- Failed-login rate limiting and temporary cooldown
+- Cloudflare Quick Tunnel, Zero Trust, and local-only modes
+- Debug mode disabled in normal server startup
 
-This repository will continue to grow as new small projects will be added.
+## Project Structure
 
-## Technologies
-
-The technologies used may vary between projects. Each project may include its own setup and usage instructions.
-
-## Getting Started
-
-### Windows — Run from the Terminal
-
-Open **PowerShell** or **Command Prompt**, then run these commands one by one:
-
-```powershell
-git clone https://github.com/HirokiSpy/Project-Gallery.git
-cd Project-Gallery
-py -m pip install -r requirements.txt
-py run_local.py
+```text
+Project-Gallery/
+├── app.py                 # Flask application and routes
+├── security_config.py     # Local password setup and configuration loading
+├── run_galeri.py          # Recommended launcher with tunnel selection
+├── start_website.py       # Python launcher for local/tunnel modes
+├── start_galeri.bat       # Windows launcher for the tunnel/menu mode
+├── start_website.bat      # Windows launcher for the website
+├── templates/
+│   └── index.html         # Gallery interface and frontend logic
+├── uploads/               # Uploaded image files
+├── data.json              # Gallery metadata
+├── requirements.txt       # Python dependencies
+└── .gitignore
 ```
 
-If the `py` command is not available, use `python`:
+## Requirements
 
-```powershell
-python -m pip install -r requirements.txt
-python run_local.py
-```
+- Python 3.10 or newer
+- `pip`
+- `cloudflared` only if using a public tunnel
 
-After the terminal asks for an admin password:
+## Installation
 
-1. Enter a new password that is at least 8 characters long.
-2. Enter the password again to confirm it.
-3. Open your browser and visit <http://localhost:5000>.
-4. Press `Ctrl+C` in the terminal to stop the application.
-
-### Linux — Run from the Terminal
-
-Open a terminal and run:
+Clone the repository:
 
 ```bash
 git clone https://github.com/HirokiSpy/Project-Gallery.git
 cd Project-Gallery
-python3 -m pip install -r requirements.txt
-python3 run_local.py
 ```
 
-After the terminal asks for an admin password:
+Create and activate a virtual environment (recommended):
 
-1. Enter a new password that is at least 8 characters long.
-2. Enter the password again to confirm it.
-3. Open your browser and visit <http://localhost:5000>.
-4. Press `Ctrl+C` in the terminal to stop the application.
+### Windows
 
-If `pip` or Python packages are restricted by your environment, use a virtual environment:
+```powershell
+py -m venv .venv
+.venv\Scripts\activate
+py -m pip install -r requirements.txt
+```
+
+### Linux / macOS
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python run_local.py
 ```
 
-### Existing Clone
+## Running the Gallery
 
-If the project folder already exists:
-
-**Windows:**
-
-```powershell
-cd Project-Gallery
-py run_local.py
-```
-
-**Linux:**
+### Recommended launcher
 
 ```bash
-cd Project-Gallery
-python3 run_local.py
+python run_galeri.py
 ```
 
-## Automatic Run — Cloudflare Tunnel
+On Windows, you can also double-click:
 
-Use this option when you want to share the application over the internet.
+```text
+start_galeri.bat
+```
 
-1. Install `cloudflared` and make sure the `cloudflared` command is available in the terminal.
-2. Run `run_galeri.py`:
+The launcher asks you to configure credentials on first use, then lets you choose:
 
-**Windows:**
+1. **Cloudflare Quick Tunnel** — uses a temporary `trycloudflare.com` URL
+2. **Cloudflare Zero Trust** — uses a custom domain or tunnel token
+3. **Local Only** — available through `http://127.0.0.1:5000`
+
+Use `CTRL+C` to stop the server.
+
+### Windows batch launcher
 
 ```powershell
-py run_galeri.py
+start_website.bat
 ```
 
-**Linux:**
+### Direct Flask server
 
 ```bash
-python3 run_galeri.py
-```
-
-The script will ask for an admin password, start Flask, and display the Cloudflare Tunnel URL.
-
-## Manual Run
-
-To run Flask without a tunnel:
-
-**Windows:**
-
-```powershell
 python app.py
 ```
 
-**Linux:**
+Open <http://localhost:5000> in a browser.
 
-```bash
-python3 app.py
+`app.py` will create `instance/admin_config.json` automatically only through its first-run setup flow. The recommended approach is to run `run_galeri.py` or `start_website.py`.
+
+## First-Time Setup
+
+When starting the application, you will be prompted to set:
+
+- A gallery passcode of at least 4 characters
+- An admin password of at least 8 characters
+
+Both passwords are stored as hashes, and a random Flask secret key is generated locally in:
+
+```text
+instance/admin_config.json
 ```
 
-Then open <http://localhost:5000>.
+Existing credentials can be changed when the launcher starts and is given permission to update them.
 
-To start a Cloudflare Tunnel manually in a second terminal:
+## Cloudflare Configuration
 
-```bash
-cloudflared tunnel --url http://localhost:5000
+### Quick Tunnel
+
+Install `cloudflared` and ensure the `cloudflared` command is available in your `PATH`, then select option 1 in `run_galeri.py`.
+
+### Zero Trust
+
+You can enter a domain interactively or provide values through a local `.env` file:
+
+```env
+CF_DOMAIN=https://gallery.example.com
+CF_TUNNEL_TOKEN=your-tunnel-token
 ```
 
-## Security Notes
+Never commit `.env` or tunnel credentials to Git.
 
-- The admin password is stored as a hash in `instance/admin_config.json`.
-- The `instance/` folder is not included in Git.
-- Do not share or commit the configuration file.
-- Gallery images and records are stored locally in `uploads/` and `data.json`.
-- Do not commit local images or runtime data to the repository.
-- Flask debug mode is disabled to prevent internal application details from being exposed.
+## Security
+
+- Gallery access and admin access use separate credentials
+- Passwords and image deletion PINs are stored as hashes
+- The local configuration file is excluded from version control
+- Failed attempts are limited with a 120-second cooldown
+- Uploaded filenames are generated securely and restricted to supported image formats
+- Request size is limited to 10 MB
+- Flask debug mode is disabled
+- The application relies on session cookies for gallery and admin access
+
+Keep `instance/`, `uploads/`, `data.json`, and `.env` private when they contain personal or runtime data.
+
+## Data Storage
+
+- `data.json` stores image metadata
+- `uploads/` stores uploaded image files
+- `instance/admin_config.json` stores password hashes and the Flask secret key
+- `instance/tunnel_url.txt` temporarily stores the active public or local URL
+
+## Supported Environment Variables
+
+| Variable | Default | Purpose |
+|---|---:|---|
+| `PORT` | `5000` | Port used by the Flask server |
+| `CF_DOMAIN` | — | Cloudflare Zero Trust custom domain |
+| `CF_TUNNEL_TOKEN` | — | Token for starting a Cloudflare tunnel |
 
 ## Purpose
 
 This repository is maintained for:
 
-- Practising development skills
-- Trying out new ideas
-- Experimenting with small applications
-- Having fun while learning
+- Practising Python and Flask development
+- Exploring web security and authentication concepts
+- Experimenting with responsive UI design
+- Building and sharing small projects for fun
 
 ## License
 
