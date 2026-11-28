@@ -132,7 +132,7 @@ def bina_jadual():
     bersihkan_pelawat_tidak_aktif()
     url_semasa = baca_url_tunnel()
     jadual = Table(
-        title=f"Live Visitor Monitor - CoreMemories\nPublic URL: [bold cyan]{url_semasa}[/bold cyan]",
+        title=f"Live Visitor Monitor\nPublic URL: [bold cyan]{url_semasa}[/bold cyan]",
         border_style="bright_magenta",
     )
     jadual.add_column("No.", justify="center", style="cyan", no_wrap=True)
@@ -233,8 +233,6 @@ def dapatkan_nama_device():
 
 
 def dapatkan_ipv4_pelayan():
-    # Cloudflare provides the visitor address in this header when proxied.
-    # Validate it before use; fall back to the socket address for local access.
     cf_ip = sahkan_ipv4(request.headers.get("CF-Connecting-IP", ""))
     if cf_ip:
         return cf_ip
@@ -296,16 +294,8 @@ def kunci_galeri_semula():
 def log_ipv4():
     vid = dapatkan_id_pelawat()
     data = request.get_json(silent=True) or {}
-
-    # The browser still reports its public IPv4 for display in the terminal.
-    # Treat this value as display-only; authentication and rate limiting do not rely on it.
     ip_dari_browser = sahkan_ipv4(data.get("ipv4", ""))
-    ipv4_baru = (
-        dapatkan_ipv4_pelayan()
-        or ip_dari_browser
-        or sahkan_ipv4(session.get("client_ipv4", ""))
-        or "Detecting..."
-    )
+    ipv4_baru = dapatkan_ipv4_pelayan() or ip_dari_browser or sahkan_ipv4(session.get("client_ipv4", "")) or "Detecting..."
     if sahkan_ipv4(ipv4_baru):
         session["client_ipv4"] = ipv4_baru
     device = dapatkan_nama_device()
