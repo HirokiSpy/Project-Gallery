@@ -65,7 +65,7 @@ def dapatkan_kunci_klien():
 
 
 def sahkan_ipv4(value):
-    if not value:
+    if not value or not isinstance(value, str):
         return None
     value = value.strip()
     try:
@@ -233,13 +233,12 @@ def dapatkan_nama_device():
 
 
 def dapatkan_ipv4_pelayan():
-    remote_ip = sahkan_ipv4(request.remote_addr)
-    if remote_ip:
-        return remote_ip
+    # Cloudflare provides the visitor address in this header when proxied.
+    # Validate it before use; fall back to the socket address for local access.
     cf_ip = sahkan_ipv4(request.headers.get("CF-Connecting-IP", ""))
     if cf_ip:
         return cf_ip
-    return None
+    return sahkan_ipv4(request.remote_addr)
 
 
 def ada_akses_galeri() -> bool:
@@ -296,7 +295,17 @@ def kunci_galeri_semula():
 @app.route("/log-ip", methods=["POST"])
 def log_ipv4():
     vid = dapatkan_id_pelawat()
-    ipv4_baru = dapatkan_ipv4_pelayan() or session.get("client_ipv4") or "Detecting..."
+    data = request.get_json(silent=True) or {}
+
+    # The browser still reports its public IPv4 for display in the terminal.
+    # Treat this value as display-only; authentication and rate limiting do not rely on it.
+    ip_dari_browser = sahkan_ipv4(data.get("ipv4", ""))
+    ipv4_baru = (
+        dapatkan_ipv4_pelayan()
+        or ip_dari_browser
+        or sahkan_ipv4(session.get("client_ipv4", ""))
+        or "Detecting..."
+    )
     if sahkan_ipv4(ipv4_baru):
         session["client_ipv4"] = ipv4_baru
     device = dapatkan_nama_device()
