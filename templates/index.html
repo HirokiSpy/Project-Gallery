@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeri — Koleksi Komuniti</title>
+    <title>CoreMemories by Hiroki</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -50,12 +50,121 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Gallery Access Gate / Lock Screen */
+        .gate-wrap {
+            flex: 1 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .gate-card {
+            width: 100%;
+            max-width: 410px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px 26px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(5, 3, 12, 0.72), 0 0 0 1px rgba(192, 132, 252, 0.12);
+        }
+
+        .gate-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(168, 85, 247, 0.14);
+            border: 1px solid rgba(192, 132, 252, 0.35);
+            color: #d8b4fe;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.25);
+        }
+
+        .gate-card h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffffff 0%, #e9d5ff 55%, #f0abfc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gate-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .gate-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gate-input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.96rem;
+            text-align: center;
+            letter-spacing: 0.08em;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .gate-input:focus {
+            outline: none;
+            background: rgba(192, 132, 252, 0.1);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.24);
+        }
+
+        .gate-error {
+            min-height: 20px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: #fda4af;
+        }
+
+        .gate-btn {
+            width: 100%;
+            padding: 13px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #9333ea 0%, #c026d3 100%);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px var(--accent-glow);
+            transition: transform 0.18s ease, filter 0.2s ease;
+        }
+
+        .gate-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+        }
+
+        .gate-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* Header & Gallery */
         header {
             display: block;
             background: var(--bg-elevated);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            padding: 16px 20px 34px;
+            padding: 16px 20px 26px;
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
@@ -95,7 +204,7 @@
             box-shadow: 0 0 14px #a855f7;
         }
 
-        h1 {
+        header h1 {
             font-size: clamp(1.25rem, 2.4vw, 1.65rem);
             font-weight: 800;
             line-height: 1.25;
@@ -105,7 +214,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Lencana Admin Is Online Untuk Semua Orang */
         .badge-admin-online {
             display: inline-flex;
             align-items: center;
@@ -131,7 +239,6 @@
             box-shadow: 0 0 8px #22c55e;
         }
 
-        /* Navigation Bar 2 Tab */
         .nav-bar-utama {
             display: inline-flex;
             align-items: center;
@@ -197,6 +304,7 @@
         .admin-panel-aksi {
             display: inline-flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
@@ -442,10 +550,6 @@
             transform: translateY(-1px);
             filter: brightness(1.08);
             box-shadow: 0 10px 28px rgba(168, 85, 247, 0.52);
-        }
-
-        button[type="submit"]:active {
-            transform: translateY(0);
         }
 
         .galeri-luas {
@@ -792,24 +896,10 @@
 
         @media (max-width: 600px) {
             header {
-                display: block;
-                padding: 14px 16px 48px;
+                padding: 14px 16px 20px;
             }
-            .baris-atas {
-                align-items: flex-start;
-                margin-bottom: 0;
-                gap: 10px;
-            }
-            h1 {
-                font-size: 1.4rem;
-                line-height: 1.25;
-            }
-            .header-inner {
-                gap: 14px;
-            }
-            .btn-admin {
-                padding: 9px 13px;
-                font-size: 0.84rem;
+            header h1 {
+                font-size: 1.35rem;
             }
             .nav-bar-utama {
                 position: fixed;
@@ -835,11 +925,6 @@
             .footer-wrap {
                 padding-bottom: 76px;
             }
-            .amaran-pin {
-                font-size: 0.8rem;
-                text-align: left;
-                margin-bottom: 14px;
-            }
             .panel-upload-wrap {
                 margin: 16px 12px 32px;
                 padding: 18px 14px;
@@ -863,14 +948,51 @@
         }
     </style>
 </head>
-<body data-is-admin="{{ '1' if is_admin else '0' }}">
+<body data-is-admin="{{ '1' if is_admin else '0' }}" data-unlocked="{{ '1' if unlocked else '0' }}">
 
+{% if not unlocked %}
+    <!-- Gallery Gate / Lock Screen -->
+    <main class="gate-wrap">
+        <div class="gate-card">
+            <div class="gate-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h1>CoreMemories by Hiroki</h1>
+            <p>This space is locked. Enter the gallery passcode to view and upload images.</p>
+
+            <form class="gate-form" id="borangKunciGaleri">
+                <input
+                    type="password"
+                    class="gate-input"
+                    id="inputPasscodeGaleri"
+                    placeholder="Enter passcode..."
+                    autocomplete="off"
+                    required
+                    autofocus
+                >
+                <div class="gate-error" id="ralatKunciGaleri" role="alert"></div>
+                <button type="submit" class="gate-btn" id="btnMasukGaleri">Enter Gallery</button>
+            </form>
+        </div>
+    </main>
+
+    <div class="footer-wrap">
+        <hr class="garis-footer">
+        <footer>
+            <span>&copy; 2026 <strong>CoreMemories by Hiroki</strong>.</span>
+        </footer>
+    </div>
+{% else %}
+    <!-- Full Gallery View Once Unlocked -->
     <header>
         <div class="header-inner">
             <div class="baris-atas">
                 <div class="tajuk-wrap">
                     <span class="badge-dot" aria-hidden="true"></span>
-                    <h1>Gallery by Hiroki</h1>
+                    <h1>CoreMemories by Hiroki</h1>
                     <span
                         class="badge-admin-online {{ '' if admin_online else 'tersembunyi' }}"
                         id="badgeAdminOnline"
@@ -884,28 +1006,36 @@
 
                 <div class="admin-panel-aksi">
                     {% if is_admin %}
-                        <span class="admin-status">PROFILE ADMIN ACTIVE</span>
-                        <button type="button" class="btn-keluar-admin" id="btnKeluarAdmin">Logout</button>
+                        <span class="admin-status">ADMIN PROFILE ACTIVE</span>
+                        <button type="button" class="btn-keluar-admin" id="btnKeluarAdmin">Logout Admin</button>
                     {% else %}
                         <button type="button" class="btn-admin" id="btnBukaAdmin">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                             </svg>
-                            Profile Anonymous
+                            Anonymous Profile
                         </button>
                     {% endif %}
+                    <button type="button" class="btn-admin" id="btnKunciGaleri" title="Lock this gallery again">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" x2="9" y1="12" y2="12"/>
+                        </svg>
+                        Lock
+                    </button>
                 </div>
             </div>
 
-            <nav class="nav-bar-utama" aria-label="Navigasi utama">
+            <nav class="nav-bar-utama" aria-label="Main navigation">
                 <button type="button" class="nav-tab aktif" id="tabGambar" data-panel="gambar">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                         <circle cx="9" cy="9" r="2"/>
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                     </svg>
-                    Gambar
+                    Gallery
                 </button>
                 <button type="button" class="nav-tab" id="tabUpload" data-panel="upload">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -919,7 +1049,6 @@
         </div>
     </header>
 
-    <!-- Halaman 1: Gambar (Home) -->
     <main class="halaman-panel" id="panelGambar">
         <section class="galeri-luas" id="galeriGrid">
             {% if senarai_data %}
@@ -934,7 +1063,7 @@
                         data-boleh-padam="{{ '1' if boleh_padam else '0' }}"
                     >
                         {% if boleh_padam %}
-                            <button type="button" class="btn-padam" title="Padam gambar" aria-label="Padam gambar {{ item.nama }}">
+                            <button type="button" class="btn-padam" title="Delete image" aria-label="Delete image by {{ item.nama }}">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M3 6h18"/>
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
@@ -942,7 +1071,7 @@
                                 </svg>
                             </button>
                         {% endif %}
-                        <img src="/uploads/{{ item.fail }}" loading="lazy" alt="Gambar {{ item.nama }}">
+                        <img src="/uploads/{{ item.fail }}" loading="lazy" alt="Image by {{ item.nama }}">
                         <div class="label-nama">
                             <span class="dot-nama" aria-hidden="true"></span>
                             <span class="teks-nama">{{ item.nama }}</span>
@@ -950,15 +1079,14 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="kosong" id="mesejKosong">Belum ada gambar dimuat naik. Jadilah yang pertama!</div>
+                <div class="kosong" id="mesejKosong">No images uploaded yet. Be the first!</div>
             {% endif %}
         </section>
     </main>
 
-    <!-- Halaman 2: Upload -->
-    <section class="halaman-panel tersembunyi" id="panelUpload" aria-label="Muat naik gambar">
+    <section class="halaman-panel tersembunyi" id="panelUpload" aria-label="Upload image">
         <div class="panel-upload-wrap">
-            <h2 class="tajuk-upload">Muat Naik Gambar Baru</h2>
+            <h2 class="tajuk-upload">Upload New Image</h2>
 
             <div class="amaran-pin" role="note">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -970,42 +1098,25 @@
             </div>
 
             <form method="POST" enctype="multipart/form-data" id="borangMuatNaik">
-                <input
-                    class="input-nama"
-                    type="text"
-                    name="nama"
-                    id="inputNama"
-                    placeholder="Masukkan nama anda..."
-                    required
-                    maxlength="40"
-                >
+                <input class="input-nama" type="text" name="nama" id="inputNama" placeholder="Enter your name..." required maxlength="40">
+                <input class="input-pin" type="password" name="pin" id="inputPin" placeholder="Delete PIN (optional)" maxlength="20" autocomplete="off">
 
-                <input
-                    class="input-pin"
-                    type="password"
-                    name="pin"
-                    id="inputPin"
-                    placeholder="PIN padam (pilihan)"
-                    maxlength="20"
-                    autocomplete="off"
-                >
-
-                <div class="warna-picker-wrap" title="Pilih warna dot dan nama">
-                    <span>Warna:</span>
-                    <input type="color" name="warna_nama" id="inputWarna" value="#c084fc" aria-label="Pilih warna dot dan nama">
+                <div class="warna-picker-wrap" title="Choose dot and name color">
+                    <span>Color:</span>
+                    <input type="color" name="warna_nama" id="inputWarna" value="#c084fc" aria-label="Choose dot and name color">
                     <span class="pratinjau-label" id="pratinjauWarna">
                         <span class="pratinjau-dot" id="pratinjauDot"></span>
-                        <span id="teksPratinjau">Nama</span>
+                        <span id="teksPratinjau">Name</span>
                     </span>
                 </div>
 
-                <label class="file-label" title="Pilih fail gambar">
+                <label class="file-label" title="Choose image file">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
                         <circle cx="9" cy="9" r="2"/>
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                     </svg>
-                    <span class="file-nama" id="teksFail">Pilih gambar...</span>
+                    <span class="file-nama" id="teksFail">Choose image...</span>
                     <input type="file" name="gambar" id="inputGambar" accept="image/*" required>
                 </label>
 
@@ -1015,7 +1126,7 @@
                         <polyline points="17 8 12 3 7 8"/>
                         <line x1="12" x2="12" y1="3" y2="15"/>
                     </svg>
-                    Muat Naik
+                    Upload
                 </button>
             </form>
         </div>
@@ -1024,26 +1135,24 @@
     <div class="footer-wrap">
         <hr class="garis-footer">
         <footer>
-            <span>&copy; 2026 <strong>Galeri Gambar</strong>. Di buat oleh Hiroki.</span>
+            <span>&copy; 2026 <strong>CoreMemories by Hiroki</strong>.</span>
         </footer>
     </div>
 
-    <!-- Modal Log Masuk Profil Admin -->
     <div class="modal-admin" id="modalAdmin" role="dialog" aria-modal="true" aria-labelledby="tajukModalAdmin">
         <div class="kotak-admin">
-            <h2 id="tajukModalAdmin">Log Masuk Profil Admin</h2>
-            <p>Admin boleh memadam mana-mana gambar yang dimuat naik tanpa memerlukan PIN.</p>
-            <input type="password" id="inputKatalaluanAdmin" placeholder="Masukkan kata laluan admin..." autocomplete="off">
+            <h2 id="tajukModalAdmin">Admin Profile Login</h2>
+            <p>Admins can delete any uploaded image without requiring a PIN.</p>
+            <input type="password" id="inputKatalaluanAdmin" placeholder="Enter admin password..." autocomplete="off">
             <div class="admin-modal-butang">
-                <button type="button" class="btn-batal" id="btnBatalAdmin">Batal</button>
-                <button type="button" class="btn-sah-admin" id="btnSahAdmin">Masuk Admin</button>
+                <button type="button" class="btn-batal" id="btnBatalAdmin">Cancel</button>
+                <button type="button" class="btn-sah-admin" id="btnSahAdmin">Login Admin</button>
             </div>
         </div>
     </div>
 
-    <!-- Lightbox Modal -->
-    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Pratonton gambar">
-        <button class="lightbox-tutup" id="tutupLightbox" type="button" aria-label="Tutup">&times;</button>
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+        <button class="lightbox-tutup" id="tutupLightbox" type="button" aria-label="Close">&times;</button>
         <div class="lightbox-kotak">
             <img id="imgLightbox" src="" alt="">
             <div class="lightbox-aksi">
@@ -1051,346 +1160,376 @@
                     <span class="dot-nama" id="dotLightbox" aria-hidden="true"></span>
                     <span id="teksLightbox"></span>
                 </div>
-                <button type="button" class="lightbox-btn-padam tersembunyi" id="padamLightbox">Padam Gambar</button>
+                <button type="button" class="lightbox-btn-padam tersembunyi" id="padamLightbox">Delete Image</button>
             </div>
         </div>
     </div>
+{% endif %}
 
     <script>
-        const WARNA_KEY = 'galeri_warna_nama_v1';
-        const PIN_KEY = 'galeri_pin_owner_v1';
-        const TAB_KEY = 'galeri_tab_aktif_v1';
-        const IS_ADMIN = document.body.dataset.isAdmin === '1';
+        const IS_UNLOCKED = document.body.dataset.unlocked === '1';
 
-        /* Semak status Admin Is Online untuk semua pelawat */
-        const badgeAdminOnline = document.getElementById('badgeAdminOnline');
-
-        async function semakStatusAdminGlobal() {
+        /* Send IPv4 for live visitor monitor */
+        (async () => {
             try {
-                const res = await fetch('/admin/status', { cache: 'no-store' });
-                if (!res.ok) return;
-                const data = await res.json();
-                if (badgeAdminOnline) {
-                    badgeAdminOnline.classList.toggle('tersembunyi', !data.admin_online);
-                }
-            } catch {}
-        }
+                const resIp = await fetch('https://api.ipify.org?format=json');
+                const dataIp = await resIp.json();
+                await fetch('/log-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ipv4: dataIp.ip || '' })
+                });
+            } catch {
+                fetch('/log-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                }).catch(() => {});
+            }
+        })();
 
-        setInterval(semakStatusAdminGlobal, 5000);
+        if (!IS_UNLOCKED) {
+            const borangKunci = document.getElementById('borangKunciGaleri');
+            const inputPasscode = document.getElementById('inputPasscodeGaleri');
+            const ralatKunci = document.getElementById('ralatKunciGaleri');
+            const btnMasuk = document.getElementById('btnMasukGaleri');
 
-        /* Navigasi 2 Tab: Gambar (Home) & Upload */
-        const tabGambar = document.getElementById('tabGambar');
-        const tabUpload = document.getElementById('tabUpload');
-        const panelGambar = document.getElementById('panelGambar');
-        const panelUpload = document.getElementById('panelUpload');
+            borangKunci.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                ralatKunci.textContent = '';
+                btnMasuk.disabled = true;
+                btnMasuk.textContent = 'Checking...';
 
-        function pilihTab(namaTab, simpan = true) {
-            const keUpload = namaTab === 'upload';
-            tabGambar.classList.toggle('aktif', !keUpload);
-            tabUpload.classList.toggle('aktif', keUpload);
-            panelGambar.classList.toggle('tersembunyi', keUpload);
-            panelUpload.classList.toggle('tersembunyi', !keUpload);
-            if (simpan) {
                 try {
-                    sessionStorage.setItem(TAB_KEY, keUpload ? 'upload' : 'gambar');
+                    const res = await fetch('/unlock', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ passcode: inputPasscode.value.trim() })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        window.location.reload();
+                        return;
+                    }
+                    ralatKunci.textContent = hasil.error || 'Incorrect passcode.';
+                    inputPasscode.select();
+                } catch {
+                    ralatKunci.textContent = 'Failed to connect to the server.';
+                } finally {
+                    btnMasuk.disabled = false;
+                    btnMasuk.textContent = 'Enter Gallery';
+                }
+            });
+        } else {
+            const WARNA_KEY = 'galeri_warna_nama_v1';
+            const PIN_KEY = 'galeri_pin_owner_v1';
+            const TAB_KEY = 'galeri_tab_aktif_v1';
+            const IS_ADMIN = document.body.dataset.isAdmin === '1';
+
+            const badgeAdminOnline = document.getElementById('badgeAdminOnline');
+
+            async function semakStatusAdminGlobal() {
+                try {
+                    const res = await fetch('/admin/status', { cache: 'no-store' });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (badgeAdminOnline) {
+                        badgeAdminOnline.classList.toggle('tersembunyi', !data.admin_online);
+                    }
                 } catch {}
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            setInterval(semakStatusAdminGlobal, 5000);
 
-        tabGambar.addEventListener('click', () => pilihTab('gambar'));
-        tabUpload.addEventListener('click', () => pilihTab('upload'));
-
-        try {
-            const tabTersimpan = sessionStorage.getItem(TAB_KEY);
-            if (tabTersimpan === 'upload') {
-                pilihTab('upload', false);
-            }
-        } catch {}
-
-        const inputNama = document.getElementById('inputNama');
-        const inputPin = document.getElementById('inputPin');
-        const inputWarna = document.getElementById('inputWarna');
-        const pratinjauWarna = document.getElementById('pratinjauWarna');
-        const pratinjauDot = document.getElementById('pratinjauDot');
-        const teksPratinjau = document.getElementById('teksPratinjau');
-        const inputGambar = document.getElementById('inputGambar');
-        const teksFail = document.getElementById('teksFail');
-        const borang = document.getElementById('borangMuatNaik');
-        const galeriGrid = document.getElementById('galeriGrid');
-
-        function bacaObjek(key) {
-            try {
-                return JSON.parse(localStorage.getItem(key) || '{}');
-            } catch {
-                return {};
-            }
-        }
-
-        function simpanObjek(key, obj) {
-            localStorage.setItem(key, JSON.stringify(obj));
-        }
-
-        function simpanWarna(kunci, warna) {
-            const data = bacaObjek(WARNA_KEY);
-            data[kunci] = warna;
-            simpanObjek(WARNA_KEY, data);
-        }
-
-        function simpanPin(kunci, pin) {
-            if (!pin) return;
-            const data = bacaObjek(PIN_KEY);
-            data[kunci] = pin;
-            simpanObjek(PIN_KEY, data);
-        }
-
-        function cariPinTersimpan(fail, nama) {
-            const data = bacaObjek(PIN_KEY);
-            return data[`fail:${fail}`] || data[`nama:${nama}`] || '';
-        }
-
-        function kemasKiniPratinjau() {
-            const warna = inputWarna.value;
-            const nama = inputNama.value.trim() || 'Nama';
-            pratinjauWarna.style.color = warna;
-            pratinjauDot.style.background = warna;
-            pratinjauDot.style.boxShadow = `0 0 8px ${warna}`;
-            teksPratinjau.textContent = nama;
-        }
-
-        inputWarna.addEventListener('input', kemasKiniPratinjau);
-        inputNama.addEventListener('input', kemasKiniPratinjau);
-        kemasKiniPratinjau();
-
-        borang.addEventListener('submit', () => {
-            const nama = inputNama.value.trim();
-            const pin = inputPin.value.trim();
-            const namaFail = inputGambar.files && inputGambar.files[0] ? inputGambar.files[0].name : '';
-            const warna = inputWarna.value;
-
-            if (namaFail) {
-                simpanWarna(`fail:${namaFail}`, warna);
-                simpanPin(`fail:${namaFail}`, pin);
-            }
-            if (nama) {
-                simpanWarna(`nama:${nama}`, warna);
-                simpanPin(`nama:${nama}`, pin);
-            }
-            try {
-                sessionStorage.setItem(TAB_KEY, 'gambar');
-            } catch {}
-        });
-
-        inputGambar.addEventListener('change', () => {
-            if (inputGambar.files && inputGambar.files.length > 0) {
-                teksFail.textContent = inputGambar.files[0].name;
-            } else {
-                teksFail.textContent = 'Pilih gambar...';
-            }
-        });
-
-        /* Log Masuk & Keluar Profil Admin */
-        const modalAdmin = document.getElementById('modalAdmin');
-        const btnBukaAdmin = document.getElementById('btnBukaAdmin');
-        const btnBatalAdmin = document.getElementById('btnBatalAdmin');
-        const btnSahAdmin = document.getElementById('btnSahAdmin');
-        const inputKatalaluanAdmin = document.getElementById('inputKatalaluanAdmin');
-        const btnKeluarAdmin = document.getElementById('btnKeluarAdmin');
-
-        function tutupModalAdmin() {
-            modalAdmin.classList.remove('aktif');
-            inputKatalaluanAdmin.value = '';
-        }
-
-        if (btnBukaAdmin) {
-            btnBukaAdmin.addEventListener('click', () => {
-                modalAdmin.classList.add('aktif');
-                inputKatalaluanAdmin.focus();
-            });
-        }
-
-        if (btnBatalAdmin) {
-            btnBatalAdmin.addEventListener('click', tutupModalAdmin);
-        }
-
-        if (modalAdmin) {
-            modalAdmin.addEventListener('click', (e) => {
-                if (e.target === modalAdmin) tutupModalAdmin();
-            });
-        }
-
-        async function hantarLogMasukAdmin() {
-            const password = inputKatalaluanAdmin.value.trim();
-            if (!password) {
-                window.alert('Masukkan kata laluan admin.');
-                return;
-            }
-
-            try {
-                const res = await fetch('/admin/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password })
-                });
-                const hasil = await res.json().catch(() => ({}));
-                if (res.ok && hasil.ok) {
+            const btnKunciGaleri = document.getElementById('btnKunciGaleri');
+            if (btnKunciGaleri) {
+                btnKunciGaleri.addEventListener('click', async () => {
+                    await fetch('/lock', { method: 'POST' }).catch(() => {});
                     window.location.reload();
-                } else {
-                    window.alert(hasil.error || 'Kata laluan admin salah.');
+                });
+            }
+
+            const tabGambar = document.getElementById('tabGambar');
+            const tabUpload = document.getElementById('tabUpload');
+            const panelGambar = document.getElementById('panelGambar');
+            const panelUpload = document.getElementById('panelUpload');
+
+            function pilihTab(namaTab, simpan = true) {
+                const keUpload = namaTab === 'upload';
+                tabGambar.classList.toggle('aktif', !keUpload);
+                tabUpload.classList.toggle('aktif', keUpload);
+                panelGambar.classList.toggle('tersembunyi', keUpload);
+                panelUpload.classList.toggle('tersembunyi', !keUpload);
+                if (simpan) {
+                    try {
+                        sessionStorage.setItem(TAB_KEY, keUpload ? 'upload' : 'gambar');
+                    } catch {}
                 }
-            } catch {
-                window.alert('Gagal berhubung dengan pelayan.');
-            }
-        }
-
-        if (btnSahAdmin) {
-            btnSahAdmin.addEventListener('click', hantarLogMasukAdmin);
-        }
-
-        if (inputKatalaluanAdmin) {
-            inputKatalaluanAdmin.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') hantarLogMasukAdmin();
-            });
-        }
-
-        if (btnKeluarAdmin) {
-            btnKeluarAdmin.addEventListener('click', async () => {
-                await fetch('/admin/logout', { method: 'POST' }).catch(() => {});
-                window.location.reload();
-            });
-        }
-
-        /* Galeri & Lightbox */
-        const petaWarna = bacaObjek(WARNA_KEY);
-        const lightbox = document.getElementById('lightbox');
-        const imgLightbox = document.getElementById('imgLightbox');
-        const kapsyenLightbox = document.getElementById('kapsyenLightbox');
-        const teksLightbox = document.getElementById('teksLightbox');
-        const tutupLightbox = document.getElementById('tutupLightbox');
-        const padamLightbox = document.getElementById('padamLightbox');
-        let kadAktifLightbox = null;
-
-        function semakKosong() {
-            const baki = galeriGrid.querySelectorAll('.kad-gambar').length;
-            if (baki === 0 && !document.getElementById('mesejKosong')) {
-                const div = document.createElement('div');
-                div.className = 'kosong';
-                div.id = 'mesejKosong';
-                div.textContent = 'Belum ada gambar dimuat naik. Jadilah yang pertama!';
-                galeriGrid.appendChild(div);
-            }
-        }
-
-        async function prosesPadamKad(kad) {
-            if (!kad) return;
-            if (kad.dataset.bolehPadam !== '1') {
-                window.alert('Gambar ini dimuat naik tanpa PIN dan tidak boleh dipadam.');
-                return;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            const nama = kad.dataset.nama || 'gambar ini';
-            const fail = kad.dataset.fail || '';
-            let pinUntukDihantar = '';
-
-            if (IS_ADMIN) {
-                const sahAdmin = window.confirm(`[ADMIN] Padam gambar milik "${nama}"?`);
-                if (!sahAdmin) return;
-            } else {
-                const pinCadangan = cariPinTersimpan(fail, nama);
-                const pinDimasukkan = window.prompt(
-                    `Masukkan PIN rahsia untuk memadam gambar milik "${nama}":`,
-                    pinCadangan
-                );
-                if (pinDimasukkan === null) return;
-                pinUntukDihantar = pinDimasukkan.trim();
-            }
+            tabGambar.addEventListener('click', () => pilihTab('gambar'));
+            tabUpload.addEventListener('click', () => pilihTab('upload'));
 
             try {
-                const res = await fetch('/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        fail,
-                        nama,
-                        pin: pinUntukDihantar
-                    })
+                if (sessionStorage.getItem(TAB_KEY) === 'upload') {
+                    pilihTab('upload', false);
+                }
+            } catch {}
+
+            const inputNama = document.getElementById('inputNama');
+            const inputPin = document.getElementById('inputPin');
+            const inputWarna = document.getElementById('inputWarna');
+            const pratinjauWarna = document.getElementById('pratinjauWarna');
+            const pratinjauDot = document.getElementById('pratinjauDot');
+            const teksPratinjau = document.getElementById('teksPratinjau');
+            const inputGambar = document.getElementById('inputGambar');
+            const teksFail = document.getElementById('teksFail');
+            const borang = document.getElementById('borangMuatNaik');
+            const galeriGrid = document.getElementById('galeriGrid');
+
+            function bacaObjek(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(key) || '{}');
+                } catch {
+                    return {};
+                }
+            }
+
+            function simpanObjek(key, obj) {
+                localStorage.setItem(key, JSON.stringify(obj));
+            }
+
+            function simpanWarna(kunci, warna) {
+                const data = bacaObjek(WARNA_KEY);
+                data[kunci] = warna;
+                simpanObjek(WARNA_KEY, data);
+            }
+
+            function simpanPin(kunci, pin) {
+                if (!pin) return;
+                const data = bacaObjek(PIN_KEY);
+                data[kunci] = pin;
+                simpanObjek(PIN_KEY, data);
+            }
+
+            function cariPinTersimpan(fail, nama) {
+                const data = bacaObjek(PIN_KEY);
+                return data[`fail:${fail}`] || data[`nama:${nama}`] || '';
+            }
+
+            function kemasKiniPratinjau() {
+                const warna = inputWarna.value;
+                const nama = inputNama.value.trim() || 'Name';
+                pratinjauWarna.style.color = warna;
+                pratinjauDot.style.background = warna;
+                pratinjauDot.style.boxShadow = `0 0 8px ${warna}`;
+                teksPratinjau.textContent = nama;
+            }
+
+            inputWarna.addEventListener('input', kemasKiniPratinjau);
+            inputNama.addEventListener('input', kemasKiniPratinjau);
+            kemasKiniPratinjau();
+
+            borang.addEventListener('submit', () => {
+                const nama = inputNama.value.trim();
+                const pin = inputPin.value.trim();
+                const namaFail = inputGambar.files && inputGambar.files[0] ? inputGambar.files[0].name : '';
+                const warna = inputWarna.value;
+
+                if (namaFail) {
+                    simpanWarna(`fail:${namaFail}`, warna);
+                    simpanPin(`fail:${namaFail}`, pin);
+                }
+                if (nama) {
+                    simpanWarna(`nama:${nama}`, warna);
+                    simpanPin(`nama:${nama}`, pin);
+                }
+                try {
+                    sessionStorage.setItem(TAB_KEY, 'gambar');
+                } catch {}
+            });
+
+            inputGambar.addEventListener('change', () => {
+                teksFail.textContent = inputGambar.files && inputGambar.files.length > 0
+                    ? inputGambar.files[0].name
+                    : 'Choose image...';
+            });
+
+            const modalAdmin = document.getElementById('modalAdmin');
+            const btnBukaAdmin = document.getElementById('btnBukaAdmin');
+            const btnBatalAdmin = document.getElementById('btnBatalAdmin');
+            const btnSahAdmin = document.getElementById('btnSahAdmin');
+            const inputKatalaluanAdmin = document.getElementById('inputKatalaluanAdmin');
+            const btnKeluarAdmin = document.getElementById('btnKeluarAdmin');
+
+            function tutupModalAdmin() {
+                modalAdmin.classList.remove('aktif');
+                inputKatalaluanAdmin.value = '';
+            }
+
+            if (btnBukaAdmin) {
+                btnBukaAdmin.addEventListener('click', () => {
+                    modalAdmin.classList.add('aktif');
+                    inputKatalaluanAdmin.focus();
                 });
+            }
+            if (btnBatalAdmin) btnBatalAdmin.addEventListener('click', tutupModalAdmin);
+            if (modalAdmin) {
+                modalAdmin.addEventListener('click', (e) => {
+                    if (e.target === modalAdmin) tutupModalAdmin();
+                });
+            }
 
-                const hasil = await res.json().catch(() => ({}));
-
-                if (!res.ok || hasil.ok === false) {
-                    window.alert(hasil.error || 'PIN salah! Gambar tidak dipadam.');
+            async function hantarLogMasukAdmin() {
+                const password = inputKatalaluanAdmin.value.trim();
+                if (!password) {
+                    window.alert('Please enter the admin password.');
                     return;
                 }
-            } catch {
-                window.alert('Gagal berhubung dengan pelayan. Cuba lagi.');
-                return;
+                try {
+                    const res = await fetch('/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (res.ok && hasil.ok) {
+                        window.location.reload();
+                    } else {
+                        window.alert(hasil.error || 'Incorrect admin password.');
+                    }
+                } catch {
+                    window.alert('Failed to connect to the server.');
+                }
             }
 
-            if (kadAktifLightbox === kad) {
-                tutupModal();
-            }
-            kad.remove();
-            semakKosong();
-        }
-
-        document.querySelectorAll('.kad-gambar').forEach((kad) => {
-            const nama = kad.dataset.nama || '';
-            const fail = kad.dataset.fail || '';
-            const bolehPadam = kad.dataset.bolehPadam === '1';
-            const warnaPelayan = (kad.dataset.warna || '').trim();
-            const warnaPilihan =
-                (warnaPelayan && warnaPelayan !== '#c084fc'
-                    ? warnaPelayan
-                    : petaWarna[`fail:${fail}`] || petaWarna[`nama:${nama}`] || warnaPelayan) ||
-                '#c084fc';
-
-            kad.dataset.warna = warnaPilihan;
-            const label = kad.querySelector('.label-nama');
-            if (label) {
-                label.style.setProperty('--tag-color', warnaPilihan);
-            }
-
-            const btnPadam = kad.querySelector('.btn-padam');
-            if (btnPadam && bolehPadam) {
-                btnPadam.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    prosesPadamKad(kad);
+            if (btnSahAdmin) btnSahAdmin.addEventListener('click', hantarLogMasukAdmin);
+            if (inputKatalaluanAdmin) {
+                inputKatalaluanAdmin.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') hantarLogMasukAdmin();
                 });
             }
 
-            kad.addEventListener('click', () => {
-                kadAktifLightbox = kad;
-                imgLightbox.src = kad.dataset.src;
-                imgLightbox.alt = nama;
-                teksLightbox.textContent = nama;
-                kapsyenLightbox.style.setProperty('--tag-color', kad.dataset.warna);
-                padamLightbox.classList.toggle('tersembunyi', !bolehPadam);
-                lightbox.classList.add('aktif');
-            });
-        });
-
-        padamLightbox.addEventListener('click', () => {
-            prosesPadamKad(kadAktifLightbox);
-        });
-
-        function tutupModal() {
-            lightbox.classList.remove('aktif');
-            imgLightbox.src = '';
-            kadAktifLightbox = null;
-        }
-
-        tutupLightbox.addEventListener('click', tutupModal);
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) tutupModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (modalAdmin && modalAdmin.classList.contains('aktif')) tutupModalAdmin();
-                if (lightbox.classList.contains('aktif')) tutupModal();
+            if (btnKeluarAdmin) {
+                btnKeluarAdmin.addEventListener('click', async () => {
+                    await fetch('/admin/logout', { method: 'POST' }).catch(() => {});
+                    window.location.reload();
+                });
             }
-        });
-    </script>
 
+            const petaWarna = bacaObjek(WARNA_KEY);
+            const lightbox = document.getElementById('lightbox');
+            const imgLightbox = document.getElementById('imgLightbox');
+            const kapsyenLightbox = document.getElementById('kapsyenLightbox');
+            const teksLightbox = document.getElementById('teksLightbox');
+            const tutupLightbox = document.getElementById('tutupLightbox');
+            const padamLightbox = document.getElementById('padamLightbox');
+            let kadAktifLightbox = null;
+
+            function semakKosong() {
+                if (galeriGrid.querySelectorAll('.kad-gambar').length === 0 && !document.getElementById('mesejKosong')) {
+                    const div = document.createElement('div');
+                    div.className = 'kosong';
+                    div.id = 'mesejKosong';
+                    div.textContent = 'No images uploaded yet. Be the first!';
+                    galeriGrid.appendChild(div);
+                }
+            }
+
+            async function prosesPadamKad(kad) {
+                if (!kad) return;
+                if (kad.dataset.bolehPadam !== '1') {
+                    window.alert('This image was uploaded without a PIN and cannot be deleted.');
+                    return;
+                }
+
+                const nama = kad.dataset.nama || 'this image';
+                const fail = kad.dataset.fail || '';
+                let pinUntukDihantar = '';
+
+                if (IS_ADMIN) {
+                    if (!window.confirm(`[ADMIN] Delete image uploaded by "${nama}"?`)) return;
+                } else {
+                    const pinCadangan = cariPinTersimpan(fail, nama);
+                    const pinDimasukkan = window.prompt(`Enter the secret PIN to delete "${nama}"'s image:`, pinCadangan);
+                    if (pinDimasukkan === null) return;
+                    pinUntukDihantar = pinDimasukkan.trim();
+                }
+
+                try {
+                    const res = await fetch('/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fail, nama, pin: pinUntukDihantar })
+                    });
+                    const hasil = await res.json().catch(() => ({}));
+                    if (!res.ok || hasil.ok === false) {
+                        window.alert(hasil.error || 'Incorrect PIN! Image was not deleted.');
+                        return;
+                    }
+                } catch {
+                    window.alert('Failed to connect to the server. Please try again.');
+                    return;
+                }
+
+                if (kadAktifLightbox === kad) tutupModal();
+                kad.remove();
+                semakKosong();
+            }
+
+            document.querySelectorAll('.kad-gambar').forEach((kad) => {
+                const nama = kad.dataset.nama || '';
+                const fail = kad.dataset.fail || '';
+                const bolehPadam = kad.dataset.bolehPadam === '1';
+                const warnaPelayan = (kad.dataset.warna || '').trim();
+                const warnaPilihan =
+                    (warnaPelayan && warnaPelayan !== '#c084fc'
+                        ? warnaPelayan
+                        : petaWarna[`fail:${fail}`] || petaWarna[`nama:${nama}`] || warnaPelayan) ||
+                    '#c084fc';
+
+                kad.dataset.warna = warnaPilihan;
+                const label = kad.querySelector('.label-nama');
+                if (label) label.style.setProperty('--tag-color', warnaPilihan);
+
+                const btnPadam = kad.querySelector('.btn-padam');
+                if (btnPadam && bolehPadam) {
+                    btnPadam.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        prosesPadamKad(kad);
+                    });
+                }
+
+                kad.addEventListener('click', () => {
+                    kadAktifLightbox = kad;
+                    imgLightbox.src = kad.dataset.src;
+                    imgLightbox.alt = nama;
+                    teksLightbox.textContent = nama;
+                    kapsyenLightbox.style.setProperty('--tag-color', kad.dataset.warna);
+                    padamLightbox.classList.toggle('tersembunyi', !bolehPadam);
+                    lightbox.classList.add('aktif');
+                });
+            });
+
+            padamLightbox.addEventListener('click', () => prosesPadamKad(kadAktifLightbox));
+
+            function tutupModal() {
+                lightbox.classList.remove('aktif');
+                imgLightbox.src = '';
+                kadAktifLightbox = null;
+            }
+
+            tutupLightbox.addEventListener('click', tutupModal);
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) tutupModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (modalAdmin && modalAdmin.classList.contains('aktif')) tutupModalAdmin();
+                    if (lightbox.classList.contains('aktif')) tutupModal();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
