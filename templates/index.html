@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoreMemories by Hiroki</title>
+    <title>Project Gallery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1133,7 +1133,7 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
             </div>
-            <h1>CoreMemories by Hiroki</h1>
+            <h1>Project Gallery</h1>
             <p>This space is locked. Enter the gallery passcode to view and upload images.</p>
 
             <form class="gate-form" id="borangKunciGaleri">
@@ -1155,7 +1155,7 @@
     <div class="footer-wrap">
         <hr class="garis-footer">
         <footer>
-            <span>&copy; 2026 <strong>CoreMemories by Hiroki</strong>.</span>
+            <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
         </footer>
     </div>
 {% else %}
@@ -1165,7 +1165,7 @@
             <div class="baris-atas">
                 <div class="tajuk-wrap">
                     <span class="badge-dot" aria-hidden="true"></span>
-                    <h1>CoreMemories by Hiroki</h1>
+                    <h1>Project Gallery</h1>
                     <span
                         class="badge-admin-online {{ '' if admin_online else 'tersembunyi' }}"
                         id="badgeAdminOnline"
@@ -1320,7 +1320,7 @@
     <div class="footer-wrap">
         <hr class="garis-footer">
         <footer>
-            <span>&copy; 2026 <strong>CoreMemories by Hiroki</strong>.</span>
+            <span>&copy; 2026 <strong>Project Gallery</strong>.</span>
         </footer>
     </div>
 
@@ -1801,7 +1801,7 @@
             btnShareLightbox.addEventListener('click', async () => {
                 if (!kadAktifLightbox) return;
                 const pautanPenuh = `${window.location.origin}/?img=${encodeURIComponent(kadAktifLightbox.dataset.fail || '')}`;
-                const tajukKongsi = `Image by ${kadAktifLightbox.dataset.nama || 'Visitor'} - CoreMemories by Hiroki`;
+                const tajukKongsi = `Image by ${kadAktifLightbox.dataset.nama || 'Visitor'} - Project Gallery`;
 
                 if (navigator.share) {
                     try {
