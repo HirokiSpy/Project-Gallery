@@ -4,38 +4,39 @@
 ![Flask](https://img.shields.io/badge/Flask-000000?style=flat&logo=flask&logoColor=white)
 ![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white)
 
-A secure, responsive image gallery built with Flask. The project is maintained for learning, experimentation, and fun.
+A simple Flask and HTML image gallery. This project uses local JSON files and folders without a third-party database.
 
 ## Features
 
-- Gallery passcode lock screen
-- Separate admin password and admin mode
-- Password hashing for gallery, admin, and per-image PIN protection
-- Upload support for PNG, JPG, JPEG, GIF, and WebP images (maximum 10 MB)
-- Custom uploader name and name colour
-- Responsive desktop and mobile gallery layout
-- Lightbox image viewer
-- Live visitor monitor in the terminal
+- Separate gallery passcode and admin password
+- Hashed gallery, admin and image PIN passwords
+- PNG, JPG, JPEG, GIF and WebP uploads up to 10 MB
+- Custom uploader names and name colours
+- Optional PIN protection for deleting images
+- Responsive gallery layout and image lightbox
+- Terminal-based visitor monitor
 - Admin online status indicator
 - Failed-login rate limiting and temporary cooldown
-- Cloudflare Quick Tunnel, Zero Trust, and local-only modes
-- Debug mode disabled in normal server startup
+- Quick Tunnel, Zero Trust or local-only modes
+- HTTP/HTTPS-aware session cookie configuration
+- Flask debug mode disabled during normal startup
 
 ## Project Structure
 
 ```text
 Project-Gallery/
 ├── app.py                 # Flask application and routes
-├── security_config.py     # Local password setup and configuration loading
-├── run_galeri.py          # Recommended launcher with tunnel selection
-├── start_website.py       # Python launcher for local/tunnel modes
-├── start_galeri.bat       # Windows launcher for the tunnel/menu mode
-├── start_website.bat      # Windows launcher for the website
+├── security_config.py     # Password configuration and secret key setup
+├── run_galeri.py          # Main launcher with connection options
+├── start_website.py       # Alternative Python launcher
+├── start_galeri.bat       # Windows launcher for run_galeri.py
+├── start_website.bat      # Windows launcher for start_website.py
 ├── templates/
-│   └── index.html         # Gallery interface and frontend logic
+│   └── index.html         # Gallery interface and JavaScript
 ├── uploads/               # Uploaded image files
-├── data.json              # Gallery metadata
+├── data.json              # Gallery metadata in JSON format
 ├── requirements.txt       # Python dependencies
+├── .env.example           # Example environment variables
 └── .gitignore
 ```
 
@@ -43,18 +44,16 @@ Project-Gallery/
 
 - Python 3.10 or newer
 - `pip`
-- `cloudflared` only if using a public tunnel
+- Cloudflared only for public Cloudflare connections
 
 ## Installation
-
-Clone the repository:
 
 ```bash
 git clone https://github.com/HirokiSpy/Project-Gallery.git
 cd Project-Gallery
 ```
 
-Create and activate a virtual environment (recommended):
+### Windows
 
 ```powershell
 py -m venv .venv
@@ -62,7 +61,7 @@ py -m venv .venv
 py -m pip install -r requirements.txt
 ```
 
-Linux / macOS:
+### Linux or macOS
 
 ```bash
 python3 -m venv .venv
@@ -70,43 +69,115 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-## Running
+## Getting Started
+
+Recommended launcher:
 
 ```bash
 python run_galeri.py
 ```
 
-The launcher asks for credentials on first use, then offers local, Quick Tunnel, or Zero Trust modes.
+On Windows, you can also open `start_galeri.bat`.
 
-## Storage
+Alternatively, start the Flask server directly:
 
-This project intentionally uses simple local files without a third-party database:
+```bash
+python app.py
+```
 
-- `data.json` stores gallery metadata.
-- `uploads/` stores uploaded image files.
-- `instance/admin_config.json` stores credential hashes and the Flask secret key.
-- `instance/tunnel_url.txt` temporarily stores the active tunnel or local URL.
+Then open:
 
-Operations that read or change `data.json` are serialized with a local lock, and writes use an atomic temporary file.
+```text
+http://127.0.0.1:5000
+```
 
-## IP Address Handling
+On the first run, the launcher asks for:
 
-The server derives visitor IPv4 from `request.remote_addr` or the validated `CF-Connecting-IP` header. `/log-ip` no longer accepts a user-supplied IP address.
+- A gallery passcode of at least 4 characters
+- An admin password of at least 8 characters
+
+Both passwords are stored as hashes. A random Flask secret key is generated locally.
+
+## Connection Modes
+
+`run_galeri.py` and `start_website.py` provide three modes:
+
+1. **Quick Tunnel** — creates a temporary `trycloudflare.com` URL
+2. **Zero Trust** — uses a Cloudflare domain or tunnel token
+3. **Local Only** — allows access through localhost or the local network
+
+For Zero Trust, copy `.env.example` to `.env`:
+
+```env
+CF_DOMAIN=https://your-domain.example
+CF_TUNNEL_TOKEN=your-tunnel-token
+PORT=5000
+GALLERY_HTTPS=1
+```
+
+Do not commit `.env` or tunnel credentials to the repository.
+
+## Data Storage
+
+This project deliberately uses local files instead of a third-party database:
+
+- `data.json` stores metadata such as uploader name, filename and colour
+- `uploads/` stores uploaded image files
+- `instance/admin_config.json` stores password hashes and the Flask secret key
+- `instance/tunnel_url.txt` stores the temporary tunnel or local URL
+
+`data.json` is protected by a local read/write lock. Writes use a temporary `data.json.tmp` file before atomically replacing the main file.
 
 ## Upload Validation
 
-Uploads must:
+Uploads must meet these requirements:
 
-- use a supported filename extension;
-- declare an image MIME type;
-- remain within the 10 MB request limit.
+- Filename extension must be PNG, JPG, JPEG, GIF or WebP
+- MIME type must start with `image/`
+- Request size must not exceed 10 MB
+- Filenames are generated randomly using UUID
+- Name colours must use six-character HEX format, such as `#c084fc`
+
+For public or untrusted use, validating the actual image contents with an image library is recommended.
+
+## Visitor IP Handling
+
+The server obtains an IPv4 address from:
+
+1. `request.remote_addr`
+2. A validated `CF-Connecting-IP` header
+
+The `/log-ip` endpoint does not accept an IP address directly from the request body. IPv4 values are validated before being stored in the session or displayed by the visitor monitor.
+
+## Security and Limitations
+
+- Passwords and PINs are not stored as plain text
+- Failed login attempts are limited with a 120-second cooldown
+- Uploaded filenames are sanitised and replaced with UUID names
+- Session cookies use `HTTPONLY` and `SAMESITE=Lax`
+- Secure cookies can be enabled with `GALLERY_HTTPS=1` when using HTTPS
+- Runtime files, secrets and user data are excluded by `.gitignore`
+- JSON operations are protected against overlapping writes within one process
+- High-scale or multi-process deployment would require external coordination or a database
+
+## Git-Ignored Files
+
+The following files and folders should not be committed:
+
+- `.env`
+- `instance/`
+- `data.json`
+- `data.json.tmp`
+- `uploads/*`, except `.gitkeep`
+- `.venv/` or `venv/`
+- Python cache files
 
 ## Purpose
 
 - Practising Python and Flask development
-- Exploring web security and authentication concepts
-- Experimenting with responsive UI design
-- Building small projects for fun
+- Learning authentication and session handling
+- Experimenting with responsive user interfaces
+- Building small projects for personal learning and use
 
 ## License
 
@@ -114,4 +185,4 @@ Provided for personal and educational use.
 
 ## Author
 
-Created and maintained by [HirokiSpy](https://github.com/HirokiSpy).
+Built and maintained by [HirokiSpy](https://github.com/HirokiSpy).
