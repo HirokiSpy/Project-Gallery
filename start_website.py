@@ -44,18 +44,16 @@ def find_cloudflared():
     ):
         if os.path.exists(path):
             return path
-
     return None
 
 
 def monitor_quick_tunnel_url(cf_process):
-    url_pattern = re.compile(
+    pattern = re.compile(
         r"https://[a-zA-Z0-9-]+\.trycloudflare\.com"
     )
-
     if cf_process.stderr:
         for line in iter(cf_process.stderr.readline, ""):
-            match = url_pattern.search(line)
+            match = pattern.search(line)
             if match:
                 URL_FILE.parent.mkdir(parents=True, exist_ok=True)
                 URL_FILE.write_text(match.group(0), encoding="utf-8")
@@ -74,10 +72,8 @@ def choose_tunnel_mode():
         choice = input(
             "Enter your choice (1 / 2 / 3) [Default: 1]: "
         ).strip() or "1"
-
         if choice in {"1", "2", "3"}:
             return choice
-
         print("Invalid choice. Please enter 1, 2, or 3.")
 
 
@@ -96,11 +92,9 @@ def main():
         cf_bin = find_cloudflared()
         if not cf_bin:
             print("\n[ERROR] 'cloudflared' was not found.")
-            print("Please install cloudflared or select mode 2 / 3.")
             input("Press Enter to exit...")
             sys.exit(1)
 
-        print("\n[1/2] Starting Cloudflare Quick Tunnel...")
         cf_process = subprocess.Popen(
             [cf_bin, "tunnel", "--url", TARGET_URL],
             cwd=BASE_DIR,
@@ -122,20 +116,11 @@ def main():
                 break
             time.sleep(0.5)
 
-        if cf_process.poll() is not None:
-            print("[ERROR] Failed to start Quick Tunnel.")
-            input("Press Enter to exit...")
-            sys.exit(1)
-
     elif mode == "2":
         domain = (
             os.environ.get("CF_DOMAIN")
-            or input(
-                "Enter your Zero Trust domain "
-                "(e.g., https://domain.com): "
-            ).strip()
+            or input("Enter your Zero Trust domain: ").strip()
         )
-
         if not domain.startswith("http"):
             domain = f"https://{domain}"
 
@@ -145,36 +130,21 @@ def main():
         if token:
             cf_bin = find_cloudflared()
             if cf_bin:
-                print(
-                    f"\n[1/2] Starting Cloudflare Zero Trust "
-                    f"Tunnel with token ({domain})..."
-                )
                 cf_process = subprocess.Popen(
                     [cf_bin, "tunnel", "run", "--token", token],
                     cwd=BASE_DIR,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
-        else:
-            print(
-                f"\n[1/2] Using existing Cloudflare Zero Trust "
-                f"service ({domain})..."
-            )
 
     else:
         URL_FILE.write_text(TARGET_URL, encoding="utf-8")
-        print(f"\n[1/2] Local mode selected ({TARGET_URL})...")
 
-    print("[2/2] Starting Flask Server...")
     os.environ["GALLERY_CONFIG_READY"] = "1"
 
-    # app.py now supplies only the Flask application.
     from app import app
 
-    print(
-        f"\nServer is starting at "
-        f"http://127.0.0.1:{PORT}"
-    )
+    print(f"\nServer is starting at http://127.0.0.1:{PORT}")
     print("Press CTRL+C to stop.\n")
 
     try:
